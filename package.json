@@ -10,10 +10,11 @@
   "scripts": {
     "build": "node ./scripts/build.js",
     "build:prod": "node ./scripts/build.js --prod",
+    "build:stylus": "stylus --watch src/assets/css/main.styl --out build/css/main.css",
     "dev": "node ./scripts/dev.js",
     "lint": "eslint **/*.(js,ts,jsx,tsx)",
     "serve": "serve --listen 9000 ./",
-    "start": "concurrently \"npm:dev\" \"npm:serve\""
+    "start": "concurrently \"npm:build:stylus\" \"npm:dev\" \"npm:serve\""
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.4.0",
@@ -23,6 +24,7 @@
     "eslint": "^7.2.0",
     "eslint-config-personal": "github:veryGoodDev/eslint-config-personal",
     "serve": "^13.0.2",
+    "stylus": "^0.55.0",
     "typescript": "^4.5.2"
   },
   "eslintConfig": {

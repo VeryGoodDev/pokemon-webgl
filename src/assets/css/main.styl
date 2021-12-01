@@ -1,0 +1,21 @@
+*, *::before, *::after
+  box-sizing border-box
+
+body
+  background-color #333
+  height 100vh
+  margin 0
+
+.screen-container
+  display grid
+  height 100%
+  place-items center
+
+.screen
+  --max-height 95vh
+  --max-width 95vw
+  height calc(var(--max-width) * (9 / 10))
+  image-rendering pixelated
+  max-height var(--max-height)
+  max-width calc(var(--max-height) * (10 / 9))
+  width var(--max-width)
