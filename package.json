@@ -1,0 +1,82 @@
+{
+  "name": "pokemon-webgl",
+  "version": "0.1.0",
+  "description": "Doing some basic recreation of Pokemon Crystal to learn WebGL",
+  "main": "src/main.ts",
+  "type": "module",
+  "repository": "https://github.com/VeryGoodDev/pokemon-webgl",
+  "author": "VeryGoodDev <very_good_dev@outlook.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "node ./scripts/build.js",
+    "build:prod": "node ./scripts/build.js --prod",
+    "dev": "node ./scripts/dev.js",
+    "lint": "eslint **/*.(js,ts,jsx,tsx)",
+    "serve": "serve --listen 9000 ./",
+    "start": "concurrently \"npm:dev\" \"npm:serve\""
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "concurrently": "^6.4.0",
+    "esbuild": "^0.14.0",
+    "eslint": "^7.2.0",
+    "eslint-config-personal": "github:veryGoodDev/eslint-config-personal",
+    "serve": "^13.0.2",
+    "typescript": "^4.5.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "personal"
+    ],
+    "rules": {
+      "import/no-extraneous-dependencies": "off",
+      "import/no-unresolved": "off"
+    },
+    "overrides": [
+      {
+        "files": [
+          "src/**/*.{ts,tsx}"
+        ],
+        "extends": [
+          "plugin:@typescript-eslint/eslint-recommended",
+          "plugin:@typescript-eslint/recommended",
+          "personal"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+          "@typescript-eslint"
+        ],
+        "rules": {
+          "no-await-in-loop": "off",
+          "no-undef": "off",
+          "no-use-before-define": "off",
+          "no-unused-vars": "off",
+          "import/extensions": "off",
+          "import/no-extraneous-dependencies": "off",
+          "import/no-unresolved": "off",
+          "jsx-a11y/no-onchange": "off",
+          "react/button-has-type": "off",
+          "react/react-in-jsx-scope": "off",
+          "react/no-unknown-property": "off",
+          "@typescript-eslint/no-use-before-define": [
+            "error",
+            {
+              "typedefs": false,
+              "functions": false
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "scripts/**/*.js"
+        ],
+        "rules": {
+          "import/extensions": "off"
+        }
+      }
+    ],
+    "ignorePatterns": "**/*.d.ts"
+  }
+}
