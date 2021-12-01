@@ -80,5 +80,8 @@
       }
     ],
     "ignorePatterns": "**/*.d.ts"
+  },
+  "dependencies": {
+    "gl-matrix": "^3.4.3"
   }
 }
