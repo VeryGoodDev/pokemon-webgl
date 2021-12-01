@@ -2,6 +2,7 @@
 import { mat4, vec3 } from 'gl-matrix'
 import { degToRad } from '../math/util'
 import ShaderInfo from './ShaderInfo'
+import type { Buffers } from './types'
 
 function loadShader(webgl: WebGLRenderingContext, type: number, source: string): WebGLShader {
   const shader = webgl.createShader(type)
@@ -31,14 +32,29 @@ export function createShaderProgram(
   }
   return shaderProgram
 }
-export function createPositionBuffer(webgl: WebGLRenderingContext): WebGLBuffer {
+export function createBuffers(webgl: WebGLRenderingContext): Buffers {
   const positionBuffer = webgl.createBuffer()
   webgl.bindBuffer(webgl.ARRAY_BUFFER, positionBuffer)
   const positions = [-1, 1, 1, 1, -1, -1, 1, -1]
   webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array(positions), webgl.STATIC_DRAW)
-  return positionBuffer
+
+  const colorBuffer = webgl.createBuffer()
+  webgl.bindBuffer(webgl.ARRAY_BUFFER, colorBuffer)
+  /* eslint-disable prettier/prettier */
+  const colors = [
+    1, 1, 1, 1, // white
+    1, 0, 0, 1, // red
+    0, 1, 0, 1, // green
+    0, 0, 1, 1, // blue
+  ]
+  /* eslint-enable prettier/prettier */
+  webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array(colors), webgl.STATIC_DRAW)
+  return {
+    position: positionBuffer,
+    color: colorBuffer,
+  }
 }
-export function drawScene(webgl: WebGLRenderingContext, shaderInfo: ShaderInfo, buffers: WebGLBuffer): void {
+export function drawScene(webgl: WebGLRenderingContext, shaderInfo: ShaderInfo, buffers: Buffers): void {
   webgl.clearColor(0, 0, 0, 1)
   webgl.clearDepth(1)
   webgl.enable(webgl.DEPTH_TEST)
@@ -58,25 +74,29 @@ export function drawScene(webgl: WebGLRenderingContext, shaderInfo: ShaderInfo, 
   const modelViewTranslation = vec3.fromValues(-0, 0, -8)
   mat4.translate(modelViewMatrix, modelViewMatrix, modelViewTranslation)
 
-  const numComponents = 2
-  const bufferDataType = webgl.FLOAT
-  const shouldNormalize = false
-  const stride = 0
-  const positionBufferOffset = 0
-
-  webgl.bindBuffer(webgl.ARRAY_BUFFER, buffers)
+  webgl.bindBuffer(webgl.ARRAY_BUFFER, buffers.position)
   webgl.vertexAttribPointer(
     shaderInfo.getAttributeLocation(`aVertexPosition`),
-    numComponents,
-    bufferDataType,
-    shouldNormalize,
-    stride,
-    positionBufferOffset
+    2, // numComponents
+    webgl.FLOAT, // bufferDataType
+    false, // shouldNormalize
+    0, // stride
+    0 // positionBufferOffset
   )
   webgl.enableVertexAttribArray(shaderInfo.getAttributeLocation(`aVertexPosition`))
 
-  webgl.useProgram(shaderInfo.program)
+  webgl.bindBuffer(webgl.ARRAY_BUFFER, buffers.color)
+  webgl.vertexAttribPointer(
+    shaderInfo.getAttributeLocation(`aVertexColor`),
+    4, // numComponents
+    webgl.FLOAT, // bufferDataType
+    false, // shouldNormalize
+    0, // stride
+    0 // positionBufferOffset
+  )
+  webgl.enableVertexAttribArray(shaderInfo.getAttributeLocation(`aVertexColor`))
 
+  webgl.useProgram(shaderInfo.program)
   webgl.uniformMatrix4fv(shaderInfo.getUniformLocation(`uProjectionMatrix`), false, projectionMatrix)
   webgl.uniformMatrix4fv(shaderInfo.getUniformLocation(`uModelViewMatrix`), false, modelViewMatrix)
 
