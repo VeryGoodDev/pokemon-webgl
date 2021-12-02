@@ -27,7 +27,9 @@ export function createShaderProgram(
   webgl.attachShader(shaderProgram, fragmentShader)
   webgl.linkProgram(shaderProgram)
   if (!webgl.getProgramParameter(shaderProgram, webgl.LINK_STATUS)) {
-    console.error(`Unable to initialize the shader program: ${webgl.getProgramInfoLog(shaderProgram)}`)
+    console.error(
+      `[shaders/util.ts] Unable to initialize the shader program: ${webgl.getProgramInfoLog(shaderProgram)}`
+    )
     return null
   }
   return shaderProgram
@@ -38,23 +40,22 @@ export function createBuffers(webgl: WebGLRenderingContext): Buffers {
   const positions = [-1, 1, 1, 1, -1, -1, 1, -1]
   webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array(positions), webgl.STATIC_DRAW)
 
-  const colorBuffer = webgl.createBuffer()
-  webgl.bindBuffer(webgl.ARRAY_BUFFER, colorBuffer)
-  /* eslint-disable prettier/prettier */
-  const colors = [
-    1, 1, 1, 1, // white
-    1, 0, 0, 1, // red
-    0, 1, 0, 1, // green
-    0, 0, 1, 1, // blue
-  ]
-  /* eslint-enable prettier/prettier */
-  webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array(colors), webgl.STATIC_DRAW)
+  const textureCoordBuffer = webgl.createBuffer()
+  webgl.bindBuffer(webgl.ARRAY_BUFFER, textureCoordBuffer)
+  const textureCoords = [0, 0, 1, 0, 1, 1, 0, 1]
+  webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array(textureCoords), webgl.STATIC_DRAW)
+
   return {
     position: positionBuffer,
-    color: colorBuffer,
+    textureCoord: textureCoordBuffer,
   }
 }
-export function drawScene(webgl: WebGLRenderingContext, shaderInfo: ShaderInfo, buffers: Buffers): void {
+export function drawScene(
+  webgl: WebGLRenderingContext,
+  shaderInfo: ShaderInfo,
+  buffers: Buffers,
+  texture: WebGLTexture
+): void {
   webgl.clearColor(0, 0, 0, 1)
   webgl.clearDepth(1)
   webgl.enable(webgl.DEPTH_TEST)
@@ -85,20 +86,24 @@ export function drawScene(webgl: WebGLRenderingContext, shaderInfo: ShaderInfo, 
   )
   webgl.enableVertexAttribArray(shaderInfo.getAttributeLocation(`aVertexPosition`))
 
-  webgl.bindBuffer(webgl.ARRAY_BUFFER, buffers.color)
+  webgl.bindBuffer(webgl.ARRAY_BUFFER, buffers.textureCoord)
   webgl.vertexAttribPointer(
-    shaderInfo.getAttributeLocation(`aVertexColor`),
-    4, // numComponents
+    shaderInfo.getAttributeLocation(`aTextureCoord`),
+    2, // numComponents
     webgl.FLOAT, // bufferDataType
     false, // shouldNormalize
     0, // stride
     0 // positionBufferOffset
   )
-  webgl.enableVertexAttribArray(shaderInfo.getAttributeLocation(`aVertexColor`))
+  webgl.enableVertexAttribArray(shaderInfo.getAttributeLocation(`aTextureCoord`))
 
   webgl.useProgram(shaderInfo.program)
   webgl.uniformMatrix4fv(shaderInfo.getUniformLocation(`uProjectionMatrix`), false, projectionMatrix)
   webgl.uniformMatrix4fv(shaderInfo.getUniformLocation(`uModelViewMatrix`), false, modelViewMatrix)
+
+  webgl.activeTexture(webgl.TEXTURE0)
+  webgl.bindTexture(webgl.TEXTURE_2D, texture)
+  webgl.uniform1i(shaderInfo.getUniformLocation(`uSampler`), 0)
 
   const offset = 0
   const vertexCount = 4
