@@ -1,3 +1,5 @@
+import { drawRectangle } from './geometry/util'
+import { randomFromRange } from './math/util'
 import ShaderInfo from './shaders/ShaderInfo'
 import { loadTexture } from './shaders/textures'
 import { createBuffers, createShaderProgram, drawScene } from './shaders/util'
@@ -68,10 +70,16 @@ async function main() {
 
   webgl.useProgram(shaderInfo.program)
   webgl.uniform2f(shaderInfo.getUniformLocation(`uResolution`), webgl.canvas.width, webgl.canvas.height)
-  webgl.drawArrays(
-    webgl.TRIANGLES, // What to draw
-    0, // Offset (0 to have none)
-    6 // How many times to call the shader
-  )
+
+  for (let i = 0; i < 50; ++i) {
+    drawRectangle(
+      webgl,
+      randomFromRange(1, 159),
+      randomFromRange(1, 143),
+      randomFromRange(1, 25),
+      randomFromRange(1, 25),
+      shaderInfo.getUniformLocation(`uColor`)
+    )
+  }
 }
 main()
