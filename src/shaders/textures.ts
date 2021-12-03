@@ -1,15 +1,5 @@
 import { isPowerOf2 } from '../math/util'
-
-function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.addEventListener(`load`, () => resolve(img))
-    img.addEventListener(`error`, () => {
-      reject(new Error(`Unable to load image with URL ${url}`))
-    })
-    img.src = url
-  })
-}
+import { loadImage } from '../util'
 
 export async function loadTexture(webgl: WebGLRenderingContext, url: string): Promise<WebGLTexture> {
   const texture = webgl.createTexture()

@@ -2,10 +2,15 @@
 
 precision highp float;
 
-uniform vec4 uColor;
+// This is the texture
+uniform sampler2D uImage;
+
+// Incoming texture coords from vertex shader
+in vec2 vTexCoord;
 
 out vec4 outColor;
 
 void main() {
-  outColor = uColor;
+  // This gets the color for the current pixel from the texture
+  outColor = texture(uImage, vTexCoord);
 }

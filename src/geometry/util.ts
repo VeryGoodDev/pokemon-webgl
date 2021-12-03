@@ -1,4 +1,4 @@
-import { randomFromRange } from '../math/util'
+// import { randomFromRange } from '../math/util'
 
 // FIXME Make it so this also sets what buffer binds to ARRAY_BUFFER
 export function drawRectangle(
@@ -6,8 +6,7 @@ export function drawRectangle(
   x: number,
   y: number,
   width: number,
-  height: number,
-  colorLocation: WebGLUniformLocation
+  height: number
 ): void {
   const x1 = x
   const x2 = x + width
@@ -22,13 +21,13 @@ export function drawRectangle(
   )
 
   // Set a random color for now
-  webgl.uniform4f(
-    colorLocation,
-    randomFromRange(10, 90) / 100,
-    randomFromRange(10, 90) / 100,
-    randomFromRange(10, 90) / 100,
-    randomFromRange(25, 75) / 100
-  )
+  // webgl.uniform4f(
+  //   colorLocation,
+  //   randomFromRange(10, 90) / 100,
+  //   randomFromRange(10, 90) / 100,
+  //   randomFromRange(10, 90) / 100,
+  //   randomFromRange(25, 75) / 100
+  // )
 
   webgl.drawArrays(webgl.TRIANGLES, 0, 6)
 }

@@ -1,8 +1,11 @@
 #version 300 es
 
 in vec2 aPosition;
+in vec2 aTexCoord;
 
 uniform vec2 uResolution;
+
+out vec2 vTexCoord;
 
 void main() {
   // Converts aPosition from pixels to a number between 0 and 1
@@ -15,4 +18,7 @@ void main() {
   // vec2 we created, and then supplying 0 and 1 as defaults to always use for
   // the other coords (which we don't care about in 2D graphics)
   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+
+  // Pass texture coord to frag shader
+  vTexCoord = aTexCoord;
 }
