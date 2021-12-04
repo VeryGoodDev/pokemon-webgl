@@ -3,26 +3,6 @@ import { createShaderProgram } from './shaders/ShaderProgram'
 import { loadFile, loadImage } from './util'
 import { clearCanvas } from './webgl-util'
 
-// async function mainOLD() {
-//   const canvas: HTMLCanvasElement = document.querySelector(`.screen`)
-//   const webgl = canvas.getContext(`webgl`)
-//   if (webgl === null) {
-//     console.error(`WebGL is not supported by your browser or device`)
-//   }
-//   webgl.clearColor(0, 0, 0, 1)
-//   webgl.clear(webgl.COLOR_BUFFER_BIT)
-
-//   const [vertexShaderSource, fragmentShaderSource, texture] = await Promise.all([
-//     loadFile(`src/assets/shaders/vertex.glsl`),
-//     loadFile(`src/assets/shaders/fragment.glsl`),
-//     loadTexture(webgl, `src/assets/img/1-50-normal.png`),
-//   ])
-//   const shaderProgram = createShaderProgram(webgl, vertexShaderSource, fragmentShaderSource)
-//   const shaderInfo = new ShaderInfo(shaderProgram, webgl)
-//   const buffers = createBuffers(webgl)
-//   drawScene(webgl, shaderInfo, buffers, texture)
-// }
-
 async function main() {
   const canvas: HTMLCanvasElement = document.querySelector(`.screen`)
   const webgl = canvas.getContext(`webgl2`)
@@ -86,22 +66,7 @@ async function main() {
   // Tells the shader to get the texture from TEXTURE0
   webgl.uniform1i(shaderProgram.getUniformLocation(`uImage`), 0)
 
-  // Bind the position buffer to ARRAY_BUFFER so drawRectangle puts data in the correct place
   shaderProgram.bufferData(positionBuffer, getRectangleBufferData(1, 0.5, image.width, image.height))
   webgl.drawArrays(webgl.TRIANGLES, 0, 6)
-
-  // Draw a rectangle the same size as the image
-  // drawRectangle(webgl, 1, 0.5, image.width, image.height)
-
-  // for (let i = 0; i < 100; ++i) {
-  //   drawRectangle(
-  //     webgl,
-  //     randomFromRange(1, 159),
-  //     randomFromRange(1, 143),
-  //     randomFromRange(1, 25),
-  //     randomFromRange(1, 25),
-  //     shaderProgram.getUniformLocation(`uColor`)
-  //   )
-  // }
 }
 main()
