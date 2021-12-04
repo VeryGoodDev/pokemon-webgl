@@ -19,9 +19,9 @@ async function main() {
 
   const shaderProgram = createShaderProgram(webgl, vertexShaderSource, fragmentShaderSource)
 
+  // const vertexArrayObj = webgl.createVertexArray()
+  // webgl.bindVertexArray(vertexArrayObj)
   // NOTE: ALL THIS POSITION SHIT HAS TO COME BEFORE THE TEXTURE SHIT OR IT WON'T RENDER THE IMAGE
-  const vertexArrayObj = webgl.createVertexArray()
-  webgl.bindVertexArray(vertexArrayObj)
   const positionBuffer = webgl.createBuffer()
   shaderProgram.bufferData(positionBuffer)
   shaderProgram.sendBufferToAttribute(`aPosition`, { componentsPerIteration: 2 })
