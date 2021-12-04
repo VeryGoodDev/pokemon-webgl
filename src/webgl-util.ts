@@ -1,3 +1,4 @@
+// Types
 type SentDataTypeOption =
   | WebGL2RenderingContext[`FLOAT`]
   | WebGL2RenderingContext[`SHORT`]
@@ -13,11 +14,13 @@ export interface SendBufferToAttributeOptions {
   offsetOfStart?: number
 }
 
+// Constants
 const DEFAULT_BUFFER_OPTIONS = {
   bufferToBindTo: WebGL2RenderingContext.ARRAY_BUFFER,
   bufferDataUsageHint: WebGL2RenderingContext.STATIC_DRAW,
 }
 
+// Lower level WebGL shit
 export function bufferData(
   webgl: WebGL2RenderingContext,
   bufferToBind: WebGLBuffer,
@@ -56,6 +59,7 @@ export function sendBufferToAttribute(
   )
 }
 
+// Helper functions and such
 export function clearCanvas(webgl: WebGL2RenderingContext) {
   webgl.clearColor(0, 0, 0, 0)
   webgl.clear(webgl.COLOR_BUFFER_BIT)
