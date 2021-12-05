@@ -1,5 +1,6 @@
 import { getRectangleBufferData } from './geometry/util'
 import { createShaderProgram } from './shaders/ShaderProgram'
+import Texture from './textures'
 import { loadFile, loadImage } from './util'
 import { clearCanvas } from './webgl-util'
 
@@ -32,10 +33,10 @@ async function main() {
   )
   shaderProgram.sendBufferToAttribute(`aTexCoord`, { componentsPerIteration: 2 })
 
-  const texture = webgl.createTexture()
+  const texture = new Texture(shaderProgram)
   // Makes TEXTURE0 the unit all other texture commands apply to
-  webgl.activeTexture(webgl.TEXTURE0)
-  webgl.bindTexture(webgl.TEXTURE_2D, texture)
+  texture.activate(webgl.TEXTURE0)
+  texture.bind(webgl.TEXTURE_2D)
 
   // These next 4 lines turn off mips, turn off filtering, and prevent repeating
   webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_WRAP_S, webgl.CLAMP_TO_EDGE)
@@ -43,15 +44,7 @@ async function main() {
   webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_MIN_FILTER, webgl.NEAREST)
   webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_MAG_FILTER, webgl.NEAREST)
 
-  // This uploads the image into the texture
-  webgl.texImage2D(
-    webgl.TEXTURE_2D,
-    0, // level (largest mip)
-    webgl.RGBA, // internalFormat (format for the texture to use)
-    webgl.RGBA, // srcFormat (format of the data being supplied)
-    webgl.UNSIGNED_BYTE, // srcType (the type of data we're supplying from the texture buffer
-    image
-  )
+  texture.upload(image)
 
   // Tells WebGL how to convert its internal space to pixel-oriented space,
   // so it goes from (0,0) to (canvas.width, canvas.height) instead of its

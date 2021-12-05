@@ -1,14 +1,13 @@
 // Types
-type SentDataTypeOption =
-  | WebGL2RenderingContext[`FLOAT`]
-  | WebGL2RenderingContext[`SHORT`]
-  | WebGL2RenderingContext[`BYTE`]
-  | WebGL2RenderingContext[`UNSIGNED_SHORT`]
-  | WebGL2RenderingContext[`UNSIGNED_BYTE`]
-  | WebGL2RenderingContext[`HALF_FLOAT`]
 export interface SendBufferToAttributeOptions {
   componentsPerIteration: number
-  sentDataType?: SentDataTypeOption
+  sentDataType?:
+    | WebGL2RenderingContext[`FLOAT`]
+    | WebGL2RenderingContext[`SHORT`]
+    | WebGL2RenderingContext[`BYTE`]
+    | WebGL2RenderingContext[`UNSIGNED_SHORT`]
+    | WebGL2RenderingContext[`UNSIGNED_BYTE`]
+    | WebGL2RenderingContext[`HALF_FLOAT`]
   shouldNormalizeData?: boolean
   offsetBetweenIterations?: number
   offsetOfStart?: number
@@ -19,6 +18,18 @@ const DEFAULT_BUFFER_OPTIONS = {
   bufferToBindTo: WebGL2RenderingContext.ARRAY_BUFFER,
   bufferDataUsageHint: WebGL2RenderingContext.STATIC_DRAW,
 }
+const DEFAULT_UPLOAD_OPTIONS = {
+  /** 0 (default) is base image level, any other number n is the nth mipmap reduction level */
+  detailLevel: 0,
+  /** What color format is in the texture */
+  internalFormat: WebGL2RenderingContext.RGBA,
+  /** Specifies the border width, but always has to be 0 for some reason idk */
+  border: 0,
+  /** Format of the data being supplied through the texture */
+  srcFormat: WebGL2RenderingContext.RGBA,
+  /** Data type of the data being supplied through the texture */
+  srcType: WebGL2RenderingContext.UNSIGNED_BYTE,
+}
 
 // Lower level WebGL shit
 export function bufferData(
@@ -28,8 +39,8 @@ export function bufferData(
   incomingOptions = {}
 ): void {
   const options: typeof DEFAULT_BUFFER_OPTIONS = {
-    ...incomingOptions,
     ...DEFAULT_BUFFER_OPTIONS,
+    ...incomingOptions,
   }
   webgl.bindBuffer(options.bufferToBindTo, bufferToBind)
   if (dataToBuffer) {
@@ -56,6 +67,25 @@ export function sendBufferToAttribute(
     shouldNormalizeData,
     offsetBetweenIterations,
     offsetOfStart
+  )
+}
+export function uploadImageToTexture(
+  webgl: WebGL2RenderingContext,
+  target: number,
+  textureImage: TexImageSource,
+  incomingOptions = {}
+): void {
+  const options = {
+    ...DEFAULT_UPLOAD_OPTIONS,
+    ...incomingOptions,
+  }
+  webgl.texImage2D(
+    target,
+    options.detailLevel,
+    options.internalFormat,
+    options.srcFormat,
+    options.srcType,
+    textureImage
   )
 }
 

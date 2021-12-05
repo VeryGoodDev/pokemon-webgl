@@ -13,6 +13,10 @@ export default class ShaderProgram {
     this.#uCache = new Map()
   }
 
+  get webgl() {
+    return this.#webgl
+  }
+
   getAttributeLocation(name: string): number {
     let location = this.#aCache.get(name)
     if (location === undefined) {

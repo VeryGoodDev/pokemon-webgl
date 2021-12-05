@@ -1,10 +1,28 @@
-import ShaderProgram from './shaders/ShaderProgram'
+import type ShaderProgram from './shaders/ShaderProgram'
+import { uploadImageToTexture } from './webgl-util'
 
 export default class Texture {
-  #shaderInfo: ShaderProgram
+  #currentlyBoundTarget: number
+  #shaderProgram: ShaderProgram
+  #texture: WebGLTexture
+  #webgl: WebGL2RenderingContext
 
   constructor(shaderInfo: ShaderProgram) {
-    this.#shaderInfo = shaderInfo
+    this.#shaderProgram = shaderInfo
+    this.#webgl = this.#shaderProgram.webgl
+    this.#texture = this.#webgl.createTexture()
+    this.#currentlyBoundTarget = null
+  }
+
+  activate(textureUnit: number): void {
+    this.#webgl.activeTexture(textureUnit)
+  }
+  bind(target: number): void {
+    this.#webgl.bindTexture(target, this.#texture)
+    this.#currentlyBoundTarget = target
+  }
+  upload(textureImage: TexImageSource, options = {}): void {
+    uploadImageToTexture(this.#webgl, this.#currentlyBoundTarget, textureImage, options)
   }
 
   // draw(): void {}
