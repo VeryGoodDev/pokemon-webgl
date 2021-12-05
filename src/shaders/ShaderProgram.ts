@@ -123,6 +123,7 @@ export default class ShaderProgram {
     this.sendBufferToAttribute(`aPosition`, { componentsPerIteration: 2 })
 
     // Set up and send data to the texture coord attribute
+    // TODO: A SpriteSheet class (also to use for font/text renderer) that does like this and calculates precise arrays of positions, but caches those results (either as a pre-rendered <canvas> buffer, or just the positions)
     const texturePositionCoords = getTexturePositionCoords(spriteOptions, image.width, image.height)
     this.bufferData(this.#webgl.createBuffer(), texturePositionCoords)
     // this.bufferData(this.#webgl.createBuffer(), new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]))
