@@ -3,7 +3,7 @@ import { loadFile, loadImage } from './util'
 
 async function main() {
   const canvas: HTMLCanvasElement = document.querySelector(`.screen`)
-  const webgl = canvas.getContext(`webgl2`, { alpha: true })
+  const webgl = canvas.getContext(`webgl2`)
   // FIXME Show error on-screen somewhere
   if (webgl === null) {
     console.error(`WebGL is not supported by your browser or device`)
