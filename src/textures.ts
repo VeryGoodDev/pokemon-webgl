@@ -3,6 +3,7 @@ import {
   disableTextureMagnification,
   disableTextureMipmapping,
   disableTextureWrapping,
+  uploadColorToTexture,
   uploadImageToTexture,
 } from './webgl-util'
 
@@ -31,13 +32,16 @@ export default class Texture {
     disableTextureMipmapping(this.#webgl, this.#currentlyBoundTarget)
     disableTextureMagnification(this.#webgl, this.#currentlyBoundTarget)
   }
-  upload(textureImage: TexImageSource, options = {}): void {
+  uploadColor(color: Uint8Array, options = {}): void {
+    uploadColorToTexture(this.#webgl, this.#currentlyBoundTarget, color, options)
+  }
+  uploadImage(textureImage: TexImageSource, options = {}): void {
     uploadImageToTexture(this.#webgl, this.#currentlyBoundTarget, textureImage, options)
   }
   init(
     textureUnitToActivate: number,
     targetToBind: number,
-    textureImage: TexImageSource,
+    texture: TexImageSource | Uint8Array,
     { doNotUseOpinionatedSettings = false, ...uploadOptions } = {}
   ): void {
     this.activate(textureUnitToActivate)
@@ -45,6 +49,10 @@ export default class Texture {
     if (!doNotUseOpinionatedSettings) {
       this.enableOpinionatedSettings()
     }
-    this.upload(textureImage, uploadOptions)
+    if (texture instanceof Uint8Array) {
+      this.uploadColor(texture, uploadOptions)
+    } else {
+      this.uploadImage(texture, uploadOptions)
+    }
   }
 }

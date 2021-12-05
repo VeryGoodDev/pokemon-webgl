@@ -12,24 +12,43 @@ export interface SendBufferToAttributeOptions {
   offsetBetweenIterations?: number
   offsetOfStart?: number
 }
+export interface TextureImageSource {
+  height: number
+  width: number
+}
+interface UploadOptions {
+  /** 0 (default) is base image level, any other number n is the nth mipmap reduction level */
+  detailLevel: number
+  /** What color format is in the texture */
+  internalFormat: number
+  /** Width of the texture, defaults to the texture image source's width */
+  width?: number
+  /** Height of the texture, defaults to the texture image source's height */
+  height?: number
+  /** Specifies the border width, but always has to be 0 for some reason idk */
+  border?: number
+  /** Format of the data being supplied through the texture */
+  srcFormat: number
+  /** Data type of the data being supplied through the texture */
+  srcType: number
+}
 
 // Constants
 const DEFAULT_BUFFER_OPTIONS = {
   bufferToBindTo: WebGL2RenderingContext.ARRAY_BUFFER,
   bufferDataUsageHint: WebGL2RenderingContext.STATIC_DRAW,
 }
-const DEFAULT_UPLOAD_OPTIONS = {
+const DEFAULT_UPLOAD_OPTIONS: UploadOptions = {
   /** 0 (default) is base image level, any other number n is the nth mipmap reduction level */
   detailLevel: 0,
   /** What color format is in the texture */
   internalFormat: WebGL2RenderingContext.RGBA,
-  /** Specifies the border width, but always has to be 0 for some reason idk */
-  border: 0,
   /** Format of the data being supplied through the texture */
   srcFormat: WebGL2RenderingContext.RGBA,
   /** Data type of the data being supplied through the texture */
   srcType: WebGL2RenderingContext.UNSIGNED_BYTE,
 }
+const NON_ZERO_BORDER_WARNING = `[webgl-utils.ts] A border with a value not equaling 0 was provided to uploadImageToTexture, but according to the spec the value of this property must be 0. I don't know what the whole deal is with all of that, but if something isn't behaving quite right, this might be a good place to look`
 
 // Lower level WebGL shit
 export function bufferData(
@@ -69,6 +88,33 @@ export function sendBufferToAttribute(
     offsetOfStart
   )
 }
+// FIXME: Dedupe common code between uploadColor and uploadTexture
+export function uploadColorToTexture(
+  webgl: WebGL2RenderingContext,
+  target: number,
+  color: Uint8Array,
+  incomingOptions = {}
+): void {
+  const options = {
+    ...DEFAULT_UPLOAD_OPTIONS,
+    ...incomingOptions,
+  }
+  const { width = 1, height = 1, border = 0 } = options
+  if (border !== 0) {
+    console.warn(NON_ZERO_BORDER_WARNING)
+  }
+  webgl.texImage2D(
+    target,
+    options.detailLevel,
+    options.internalFormat,
+    width,
+    height,
+    border,
+    options.srcFormat,
+    options.srcType,
+    color
+  )
+}
 export function uploadImageToTexture(
   webgl: WebGL2RenderingContext,
   target: number,
@@ -79,15 +125,17 @@ export function uploadImageToTexture(
     ...DEFAULT_UPLOAD_OPTIONS,
     ...incomingOptions,
   }
-  if (options.border !== 0) {
-    console.warn(
-      `[webgl-utils.ts] A border with a value not equaling 0 was provided to uploadImageToTexture, but according to the spec the value of this property must be 0. I don't know what the whole deal is with all of that, but if something isn't behaving quite right, this might be a good place to look`
-    )
+  const { width = textureImage.width, height = textureImage.height, border = 0 } = options
+  if (border !== 0) {
+    console.warn(NON_ZERO_BORDER_WARNING)
   }
   webgl.texImage2D(
     target,
     options.detailLevel,
     options.internalFormat,
+    width,
+    height,
+    border,
     options.srcFormat,
     options.srcType,
     textureImage
