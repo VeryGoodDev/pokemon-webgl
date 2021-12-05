@@ -79,6 +79,11 @@ export function uploadImageToTexture(
     ...DEFAULT_UPLOAD_OPTIONS,
     ...incomingOptions,
   }
+  if (options.border !== 0) {
+    console.warn(
+      `[webgl-utils.ts] A border with a value not equaling 0 was provided to uploadImageToTexture, but according to the spec the value of this property must be 0. I don't know what the whole deal is with all of that, but if something isn't behaving quite right, this might be a good place to look`
+    )
+  }
   webgl.texImage2D(
     target,
     options.detailLevel,
@@ -87,6 +92,24 @@ export function uploadImageToTexture(
     options.srcType,
     textureImage
   )
+}
+// The "S" coordinate of a texture is equivalent to the X axis as far as I can tell
+export function disableTextureWrappingS(webgl: WebGL2RenderingContext, target: number): void {
+  webgl.texParameteri(target, webgl.TEXTURE_WRAP_S, webgl.CLAMP_TO_EDGE)
+}
+// The "T" coordinate of a texture is equivalent to the Y axis as far as I can tell
+export function disableTextureWrappingT(webgl: WebGL2RenderingContext, target: number): void {
+  webgl.texParameteri(target, webgl.TEXTURE_WRAP_T, webgl.CLAMP_TO_EDGE)
+}
+export function disableTextureWrapping(webgl: WebGL2RenderingContext, target: number): void {
+  disableTextureWrappingS(webgl, target)
+  disableTextureWrappingT(webgl, target)
+}
+export function disableTextureMipmapping(webgl: WebGL2RenderingContext, target: number): void {
+  webgl.texParameteri(target, webgl.TEXTURE_MIN_FILTER, webgl.NEAREST)
+}
+export function disableTextureMagnification(webgl: WebGL2RenderingContext, target: number): void {
+  webgl.texParameteri(target, webgl.TEXTURE_MAG_FILTER, webgl.NEAREST)
 }
 
 // Helper functions and such
