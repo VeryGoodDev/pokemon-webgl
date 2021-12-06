@@ -42,7 +42,7 @@ const DEFAULT_UPLOAD_OPTIONS: UploadOptions = {
   /** Data type of the data being supplied through the texture */
   srcType: WebGL2RenderingContext.UNSIGNED_BYTE,
 }
-const NON_ZERO_BORDER_WARNING = `[webgl-utils.ts] A border with a value not equaling 0 was provided to uploadImageToTexture, but according to the spec the value of this property must be 0. I don't know what the whole deal is with all of that, but if something isn't behaving quite right, this might be a good place to look`
+const NON_ZERO_BORDER_WARNING = `A border with a value not equaling 0 was provided to uploadImageToTexture, but according to the spec the value of this property must be 0. I don't know what the whole deal is with all of that, but if something isn't behaving quite right, this might be a good place to look`
 
 // Lower level WebGL shit
 export function bufferData(
@@ -95,7 +95,7 @@ export function uploadColorToTexture(
   }
   const { width = 1, height = 1, border = 0 } = options
   if (border !== 0) {
-    console.warn(NON_ZERO_BORDER_WARNING)
+    console.warn(`[uploadColorToTexture()] ${NON_ZERO_BORDER_WARNING}`)
   }
   webgl.texImage2D(
     target,
@@ -121,7 +121,7 @@ export function uploadImageToTexture(
   }
   const { width = textureImage.width, height = textureImage.height, border = 0 } = options
   if (border !== 0) {
-    console.warn(NON_ZERO_BORDER_WARNING)
+    console.warn(`[uploadImageToTexture()] ${NON_ZERO_BORDER_WARNING}`)
   }
   webgl.texImage2D(
     target,

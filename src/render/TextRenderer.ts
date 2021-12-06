@@ -41,7 +41,7 @@ export default class TextRenderer {
   renderLine(text: string, position: Vec2): void {
     if (text.length > MAX_CHARACTERS_PER_LINE) {
       console.warn(
-        `[render/TextRenderer.ts] Attempting to render a line longer than ${MAX_CHARACTERS_PER_LINE} characters may cause unexpected visual behavior. Please reconsider your life choices (and use the getTextLines function exported out of this file to help separate long pieces of text into appropriately sized lines)`
+        `[TextRenderer::renderLine()] Attempting to render a line longer than ${MAX_CHARACTERS_PER_LINE} characters may cause unexpected visual behavior. Please reconsider your life choices (and use the getTextLines function exported out of this file to help separate long pieces of text into appropriately sized lines)`
       )
     }
     getCharacterArray(text).forEach((character, idx) => {

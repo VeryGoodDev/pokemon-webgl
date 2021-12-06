@@ -99,7 +99,7 @@ export default class ShaderProgram {
   drawTrianglesFromBuffer() {
     if (this.#queuedBuffers.length < 1) {
       console.warn(
-        `[render/ShaderProgram.ts] drawTrianglesFromBuffer was called, but the queue of buffers maintained by the ShaderProgram is empty. Depending on where the call to here came from, there may be no issue, but if anything is working as expected, consider trying to buffer any image(s) through the addImageToRenderQueue method and then call the renderImagesFromQueue method instead of calling drawTrianglesFromBuffer directly`
+        `[ShaderProgram::drawTrianglesFromBuffer()] drawTrianglesFromBuffer was called, but the queue of buffers maintained by the ShaderProgram is empty. Depending on where the call to here came from, there may be no issue, but if anything is working as expected, consider trying to buffer any image(s) through the addImageToRenderQueue method and then call the renderImagesFromQueue method instead of calling drawTrianglesFromBuffer directly`
       )
     }
     this.#webgl.drawArrays(this.#webgl.TRIANGLES, FIRST_DRAW_INDEX, NUM_INDICES_TO_DRAW * this.#queuedBuffers.length)
@@ -145,7 +145,7 @@ function loadShader(webgl: WebGL2RenderingContext, type: number, source: string)
   webgl.shaderSource(shader, source)
   webgl.compileShader(shader)
   if (!webgl.getShaderParameter(shader, webgl.COMPILE_STATUS)) {
-    console.error(`[shaders/util.ts] There was an error while compiling the shader: ${webgl.getShaderInfoLog(shader)}`)
+    console.error(`[loadShader()] There was an error while compiling the shader: ${webgl.getShaderInfoLog(shader)}`)
     webgl.deleteShader(shader)
     return null
   }
@@ -167,7 +167,7 @@ export function createShaderProgram(
   webgl.linkProgram(shaderProgram)
   if (!webgl.getProgramParameter(shaderProgram, webgl.LINK_STATUS)) {
     console.error(
-      `[shaders/util.ts] Unable to initialize the shader program: ${webgl.getProgramInfoLog(shaderProgram)}`
+      `[createShaderProgram()] Unable to initialize the shader program: ${webgl.getProgramInfoLog(shaderProgram)}`
     )
     return null
   }
