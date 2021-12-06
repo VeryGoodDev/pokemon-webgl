@@ -1,6 +1,6 @@
 import Game from './engine/Game'
 import { createShaderProgram } from './render/ShaderProgram'
-import Spritesheet from './Spritesheet'
+import { createTextRenderer } from './render/TextRenderer'
 import Texture from './textures'
 import { loadFile, loadImage, Size, Vec2 } from './util'
 
@@ -24,28 +24,19 @@ async function main() {
   shaderProgram.use()
   shaderProgram.setResolutionThroughUniform(`uResolution`)
   shaderProgram.specifyTextureThroughUniform(`uImage`, 0)
-  const fontSprites = new Spritesheet(image, new Size(8, 8))
-  fontSprites.defineSprite(`A`, new Vec2(0, 0))
-  fontSprites.defineSprite(`B`, new Vec2(8, 0))
-  fontSprites.defineSprite(`C`, new Vec2(16, 0))
-  const infoA = fontSprites.getSpriteData(`A`)
-  const infoB = fontSprites.getSpriteData(`B`)
-  const infoC = fontSprites.getSpriteData(`C`)
   const texture = new Texture(shaderProgram)
   texture.init(webgl.TEXTURE0, webgl.TEXTURE_2D, image)
-  shaderProgram.addImageToRenderQueue(image, new Vec2(2, 2), {
-    offset: infoA.offset,
-    size: infoB.size,
-  })
-  shaderProgram.addImageToRenderQueue(image, new Vec2(10, 2), {
-    offset: infoB.offset,
-    size: infoB.size,
-  })
-  shaderProgram.addImageToRenderQueue(image, new Vec2(18, 2), {
-    offset: infoC.offset,
-    size: infoC.size,
-  })
-  shaderProgram.renderImagesFromQueue()
+  const textRenderer = await createTextRenderer(shaderProgram)
+  textRenderer.renderText(`{{PK}}{{MN}}`)
+  // shaderProgram.addImageToRenderQueue(image, new Vec2(2, 2), {
+  //   offset: new Vec2(8, 8),
+  //   size: new Size(16, 16),
+  // })
+  // shaderProgram.addImageToRenderQueue(image, new Vec2(17, 8), {
+  //   offset: new Vec2(16, 24),
+  //   size: new Size(8, 8),
+  // })
+  // shaderProgram.renderImagesFromQueue()
   // const game = new Game(shaderProgram)
   // game.runLoop()
 }

@@ -21,6 +21,13 @@ export class Vec2 {
     this.x = x
     this.y = y
   }
+
+  isEqualTo(vec2: Vec2) {
+    return this.x === vec2.x && this.y === vec2.y
+  }
+  toString() {
+    return `[${this.x}, ${this.y}]`
+  }
 }
 
 export class Size {

@@ -24,8 +24,15 @@ export default class Spritesheet {
     this.define(name, offset, this.#size)
   }
   getSpriteData(name: string): SpriteData & { image: TexImageSource } {
+    if (!this.#spriteData.has(name)) {
+      throw new Error(`[Spritesheet.ts] No sprite defined with name ${name}`)
+    }
+    const { offset, size } = this.#spriteData.get(name)
+    offset.x *= size.width
+    offset.y *= size.height
     return {
-      ...this.#spriteData.get(name),
+      offset,
+      size,
       image: this.#image,
     }
   }
