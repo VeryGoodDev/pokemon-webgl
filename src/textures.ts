@@ -1,4 +1,4 @@
-import type ShaderProgram from './shaders/ShaderProgram'
+import type ShaderProgram from './render/ShaderProgram'
 import {
   disableTextureMagnification,
   disableTextureMipmapping,

@@ -1,20 +1,15 @@
 import { getRectangleBufferData } from '../geometry/util'
 import Texture from '../textures'
+import { Size, Vec2 } from '../util'
 import * as webglUtils from '../webgl-util'
 
-interface Size {
-  width: number
-  height: number
-}
 interface SpriteOptions {
-  offset?: {
-    x: number
-    y: number
-  }
-  size?: {
-    width: number
-    height: number
-  }
+  offset?: Vec2
+  size?: Size
+}
+interface QueuedBuffer {
+  position: number[]
+  textureCoords: number[]
 }
 
 const FIRST_DRAW_INDEX = 0
@@ -26,26 +21,22 @@ function getDefaultSize(webgl: WebGL2RenderingContext): Size {
     height: webgl.canvas.height,
   }
 }
-function getTexturePositionCoords(spriteOptions: SpriteOptions, imageWidth: number, imageHeight: number): Float32Array {
+function getTexturePositionCoords(spriteOptions: SpriteOptions, imageSize: Size): number[] {
+  // NOTE: All four values that
   let xStart = 0
-  if (spriteOptions?.offset) {
-    xStart = spriteOptions.offset.x
-  }
-  let xEnd = 1
-  if (spriteOptions?.size) {
-    xEnd = (xStart + spriteOptions.size.width) / imageWidth
-  }
-  xStart /= imageWidth
   let yStart = 0
   if (spriteOptions?.offset) {
-    yStart = spriteOptions.offset.y
+    xStart = spriteOptions.offset.x / imageSize.width
+    yStart = spriteOptions.offset.y / imageSize.height
   }
-  let yEnd = 1
+  let { width, height } = imageSize
   if (spriteOptions?.size) {
-    yEnd = (yStart + spriteOptions.size.height) / imageHeight
+    width = spriteOptions.size.width / imageSize.width
+    height = spriteOptions.size.height / imageSize.height
   }
-  yStart /= imageHeight
-  return new Float32Array([xStart, yStart, xEnd, yStart, xStart, yEnd, xStart, yEnd, xEnd, yStart, xEnd, yEnd])
+  const offset = new Vec2(xStart, yStart)
+  const size = new Size(width, height)
+  return getRectangleBufferData(offset, size)
 }
 
 export default class ShaderProgram {
@@ -54,12 +45,14 @@ export default class ShaderProgram {
   #aCache: Map<string, number>
   #uCache: Map<string, WebGLUniformLocation>
   #vertexArrayObj: WebGLVertexArrayObject
+  #queuedBuffers: QueuedBuffer[]
 
   constructor(program: WebGLProgram, webgl: WebGL2RenderingContext) {
     this.#program = program
     this.#webgl = webgl
     this.#aCache = new Map()
     this.#uCache = new Map()
+    this.#queuedBuffers = []
 
     // I think this like "records" stuff using the vertex shader or something idk
     // Mostly just doing it so it's available if I end up needing it later
@@ -88,62 +81,69 @@ export default class ShaderProgram {
     return location
   }
 
+  cloneWithNewContext(webgl: WebGL2RenderingContext): ShaderProgram {
+    return new ShaderProgram(this.#program, webgl)
+  }
+
+  addImageToRenderQueue(image: TexImageSource, position: Vec2, spriteOptions: SpriteOptions = {}): void {
+    const imageSize = new Size(image.width, image.height)
+    const positionBuffer = getRectangleBufferData(position, spriteOptions.size ?? imageSize)
+    const textureCoordsBuffer = getTexturePositionCoords(spriteOptions, imageSize)
+    this.#queuedBuffers.push({ position: positionBuffer, textureCoords: textureCoordsBuffer })
+  }
   bufferData(bufferToBind: WebGLBuffer, dataToBuffer: BufferSource = null, options = {}): void {
     webglUtils.bufferData(this.#webgl, bufferToBind, dataToBuffer, options)
   }
   clearCanvas() {
     webglUtils.clearCanvas(this.#webgl)
   }
-  drawRectangle(x: number, y: number, width: number, height: number, color = new Uint8Array([255, 255, 255, 1])): void {
-    // Set up position buffer and give it the image data to calculate the rectangle to draw
-    this.bufferData(this.#webgl.createBuffer(), getRectangleBufferData(x, y, width, height))
-    this.sendBufferToAttribute(`aPosition`, { componentsPerIteration: 2 })
-
-    // Set up and send data to the texture coord attribute
-    this.bufferData(this.#webgl.createBuffer(), new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]))
-    this.sendBufferToAttribute(`aTexCoord`, { componentsPerIteration: 2 })
-
-    // Set up a 1x1 pixel in the specified color to draw
-    const texture = new Texture(this)
-    texture.init(this.#webgl.TEXTURE0, this.#webgl.TEXTURE_2D, color)
-
-    this.drawTrianglesFromBuffer()
+  drawTrianglesFromBuffer() {
+    this.#webgl.drawArrays(this.#webgl.TRIANGLES, FIRST_DRAW_INDEX, NUM_INDICES_TO_DRAW * this.#queuedBuffers.length)
+    this.#queuedBuffers = []
   }
-  renderImage(image: TexImageSource, x: number, y: number, spriteOptions: SpriteOptions = {}): void {
+  prepareImageForRender(image: TexImageSource, position: Vec2, spriteOptions: SpriteOptions = {}): void {
+    const imageSize = new Size(image.width, image.height)
     // Set up position buffer and give it the image data to calculate the rectangle to draw
     this.bufferData(
       this.#webgl.createBuffer(),
-      getRectangleBufferData(
-        x,
-        y,
-        spriteOptions?.size?.width ?? image.width,
-        spriteOptions?.size?.height ?? image.height
-      )
+      new Float32Array(getRectangleBufferData(position, spriteOptions?.size ?? imageSize))
     )
-    this.sendBufferToAttribute(`aPosition`, { componentsPerIteration: 2 })
+    this.sendBufferToAttribute(`aPosition`)
 
     // Set up and send data to the texture coord attribute
     // TODO: A SpriteSheet class (also to use for font/text renderer) that does like this and calculates precise arrays of positions, but caches those results (either as a pre-rendered <canvas> buffer, or just the positions)
-    const texturePositionCoords = getTexturePositionCoords(spriteOptions, image.width, image.height)
-    this.bufferData(this.#webgl.createBuffer(), texturePositionCoords)
+    this.bufferData(this.#webgl.createBuffer(), new Float32Array(getTexturePositionCoords(spriteOptions, imageSize)))
     // this.bufferData(this.#webgl.createBuffer(), new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]))
-    this.sendBufferToAttribute(`aTexCoord`, { componentsPerIteration: 2 })
+    this.sendBufferToAttribute(`aTexCoord`)
 
     // Set up our texture
     const texture = new Texture(this)
     texture.init(this.#webgl.TEXTURE0, this.#webgl.TEXTURE_2D, image)
-
-    // All the data is buffered, this gets the GPU to actually draw it all out
+  }
+  renderImage(image: TexImageSource, position: Vec2, spriteOptions: SpriteOptions = {}): void {
+    this.prepareImageForRender(image, position, spriteOptions)
     this.drawTrianglesFromBuffer()
   }
-  drawTrianglesFromBuffer() {
-    this.#webgl.drawArrays(this.#webgl.TRIANGLES, FIRST_DRAW_INDEX, NUM_INDICES_TO_DRAW)
+  renderImagesFromQueue() {
+    const { positionArray, textureCoordArray } = this.#queuedBuffers.reduce(
+      (combinedBuffers, nextInQueue) => {
+        combinedBuffers.positionArray = combinedBuffers.positionArray.concat(nextInQueue.position)
+        combinedBuffers.textureCoordArray = combinedBuffers.textureCoordArray.concat(nextInQueue.textureCoords)
+        return combinedBuffers
+      },
+      { positionArray: [], textureCoordArray: [] }
+    )
+    this.bufferData(this.#webgl.createBuffer(), new Float32Array(positionArray))
+    this.sendBufferToAttribute(`aPosition`)
+    this.bufferData(this.#webgl.createBuffer(), new Float32Array(textureCoordArray))
+    this.sendBufferToAttribute(`aTexCoord`)
+    this.drawTrianglesFromBuffer()
   }
   resetCanvas() {
     this.clearCanvas()
     this.setViewportToCanvas()
   }
-  sendBufferToAttribute(attributeName: string, options: webglUtils.SendBufferToAttributeOptions): void {
+  sendBufferToAttribute(attributeName: string, options: webglUtils.SendBufferToAttributeOptions = {}): void {
     webglUtils.sendBufferToAttribute(this.#webgl, this.getAttributeLocation(attributeName), options)
   }
   setResolutionThroughUniform(resolutionUniformName: string, size = getDefaultSize(this.#webgl)): void {

@@ -1,5 +1,8 @@
-import { createShaderProgram } from './shaders/ShaderProgram'
-import { loadFile, loadImage } from './util'
+import Game from './engine/Game'
+import { createShaderProgram } from './render/ShaderProgram'
+import Spritesheet from './Spritesheet'
+import Texture from './textures'
+import { loadFile, loadImage, Size, Vec2 } from './util'
 
 async function main() {
   const canvas: HTMLCanvasElement = document.querySelector(`.screen`)
@@ -21,14 +24,29 @@ async function main() {
   shaderProgram.use()
   shaderProgram.setResolutionThroughUniform(`uResolution`)
   shaderProgram.specifyTextureThroughUniform(`uImage`, 0)
-  shaderProgram.resetCanvas()
-  const loop = () => {
-    shaderProgram.renderImage(image, 4, 4, {
-      offset: { x: 40, y: 72 },
-      size: { width: 8, height: 8 },
-    })
-    requestAnimationFrame(loop)
-  }
-  loop()
+  const fontSprites = new Spritesheet(image, new Size(8, 8))
+  fontSprites.defineSprite(`A`, new Vec2(0, 0))
+  fontSprites.defineSprite(`B`, new Vec2(8, 0))
+  fontSprites.defineSprite(`C`, new Vec2(16, 0))
+  const infoA = fontSprites.getSpriteData(`A`)
+  const infoB = fontSprites.getSpriteData(`B`)
+  const infoC = fontSprites.getSpriteData(`C`)
+  const texture = new Texture(shaderProgram)
+  texture.init(webgl.TEXTURE0, webgl.TEXTURE_2D, image)
+  shaderProgram.addImageToRenderQueue(image, new Vec2(2, 2), {
+    offset: infoA.offset,
+    size: infoB.size,
+  })
+  shaderProgram.addImageToRenderQueue(image, new Vec2(10, 2), {
+    offset: infoB.offset,
+    size: infoB.size,
+  })
+  shaderProgram.addImageToRenderQueue(image, new Vec2(18, 2), {
+    offset: infoC.offset,
+    size: infoC.size,
+  })
+  shaderProgram.renderImagesFromQueue()
+  // const game = new Game(shaderProgram)
+  // game.runLoop()
 }
 main()

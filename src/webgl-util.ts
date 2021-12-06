@@ -1,13 +1,7 @@
 // Types
 export interface SendBufferToAttributeOptions {
-  componentsPerIteration: number
-  sentDataType?:
-    | WebGL2RenderingContext[`FLOAT`]
-    | WebGL2RenderingContext[`SHORT`]
-    | WebGL2RenderingContext[`BYTE`]
-    | WebGL2RenderingContext[`UNSIGNED_SHORT`]
-    | WebGL2RenderingContext[`UNSIGNED_BYTE`]
-    | WebGL2RenderingContext[`HALF_FLOAT`]
+  componentsPerIteration?: number
+  sentDataType?: number
   shouldNormalizeData?: boolean
   offsetBetweenIterations?: number
   offsetOfStart?: number
@@ -72,7 +66,7 @@ export function sendBufferToAttribute(
   options: SendBufferToAttributeOptions
 ): void {
   const {
-    componentsPerIteration,
+    componentsPerIteration = 2,
     sentDataType = webgl.FLOAT,
     shouldNormalizeData = false,
     offsetBetweenIterations = 0,

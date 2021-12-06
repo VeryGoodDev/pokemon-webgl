@@ -12,3 +12,23 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
     img.src = url
   })
 }
+
+export class Vec2 {
+  x: number
+  y: number
+
+  constructor(x: number, y: number) {
+    this.x = x
+    this.y = y
+  }
+}
+
+export class Size {
+  width: number
+  height: number
+
+  constructor(width: number, height: number) {
+    this.width = width
+    this.height = height
+  }
+}
