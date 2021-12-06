@@ -4,6 +4,7 @@ import type ShaderProgram from './ShaderProgram'
 
 const CHARACTER_WIDTH = 8
 const CHARACTER_HEIGHT = 8
+const MAX_CHARACTERS_PER_LINE = 18
 const FONT_CHARACTERS = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-?!/.,×():;[]~~0123456789é'… `
 const SPECIAL_CHARACTER_REGEX = /\{\{.+?\}\}/g
 
@@ -37,9 +38,14 @@ export default class TextRenderer {
     const { image, offset, size } = this.#fontSprites.getSpriteData(character)
     this.#shaderProgram.addImageToRenderQueue(image, position, { offset, size })
   }
-  renderText(text: string): void {
+  renderLine(text: string, position: Vec2): void {
+    if (text.length > MAX_CHARACTERS_PER_LINE) {
+      console.warn(
+        `[render/TextRenderer.ts] Attempting to render a line longer than ${MAX_CHARACTERS_PER_LINE} characters may cause unexpected visual behavior. Please reconsider your life choices (and use the getTextLines function exported out of this file to help separate long pieces of text into appropriately sized lines)`
+      )
+    }
     getCharacterArray(text).forEach((character, idx) => {
-      this.#addCharacterToQueue(character, new Vec2(idx * CHARACTER_WIDTH, 2))
+      this.#addCharacterToQueue(character, new Vec2(position.x + idx * CHARACTER_WIDTH, position.y))
     })
     this.#shaderProgram.renderImagesFromQueue()
   }
@@ -80,4 +86,23 @@ export async function createTextRenderer(shaderProgram: ShaderProgram): Promise<
   const imageSize = new Size(fontImage.width, fontImage.height)
   defineFontCharacters(fontSprites, imageSize)
   return new TextRenderer(shaderProgram, fontSprites)
+}
+export function getTextLines(text: string): string[] {
+  const words = text.split(` `)
+  const lines = []
+  let currentLine = ``
+  for (const word of words) {
+    if (currentLine.length + word.length > MAX_CHARACTERS_PER_LINE) {
+      lines.push(currentLine)
+      currentLine = `${word} `
+    } else if (currentLine.length + word.length === MAX_CHARACTERS_PER_LINE) {
+      currentLine += word
+    } else {
+      currentLine += `${word} `
+    }
+  }
+  if (currentLine.length > 0) {
+    lines.push(currentLine)
+  }
+  return lines.map((line) => line.trim())
 }

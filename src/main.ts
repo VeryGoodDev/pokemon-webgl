@@ -27,16 +27,8 @@ async function main() {
   const texture = new Texture(shaderProgram)
   texture.init(webgl.TEXTURE0, webgl.TEXTURE_2D, image)
   const textRenderer = await createTextRenderer(shaderProgram)
-  textRenderer.renderText(`VERYGOODDEV`)
-  // shaderProgram.addImageToRenderQueue(image, new Vec2(2, 2), {
-  //   offset: new Vec2(8, 8),
-  //   size: new Size(16, 16),
-  // })
-  // shaderProgram.addImageToRenderQueue(image, new Vec2(17, 8), {
-  //   offset: new Vec2(16, 24),
-  //   size: new Size(8, 8),
-  // })
-  // shaderProgram.renderImagesFromQueue()
+  textRenderer.renderLine(`Are you a boy?`, new Vec2(8, 112))
+  textRenderer.renderLine(`Or are you a girl?`, new Vec2(8, 128))
   // const game = new Game(shaderProgram)
   // game.runLoop()
 }
