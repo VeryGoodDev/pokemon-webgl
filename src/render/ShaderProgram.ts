@@ -1,5 +1,4 @@
 import { getRectangleBufferData } from '../geometry/util'
-import Texture from '../textures'
 import { Size, Vec2 } from '../util'
 import * as webglUtils from '../webgl-util'
 
@@ -98,31 +97,12 @@ export default class ShaderProgram {
     webglUtils.clearCanvas(this.#webgl)
   }
   drawTrianglesFromBuffer() {
+    if (this.#queuedBuffers.length < 1) {
+      console.warn(
+        `[render/ShaderProgram.ts] drawTrianglesFromBuffer was called, but the queue of buffers maintained by the ShaderProgram is empty. Depending on where the call to here came from, there may be no issue, but if anything is working as expected, consider trying to buffer any image(s) through the addImageToRenderQueue method and then call the renderImagesFromQueue method instead of calling drawTrianglesFromBuffer directly`
+      )
+    }
     this.#webgl.drawArrays(this.#webgl.TRIANGLES, FIRST_DRAW_INDEX, NUM_INDICES_TO_DRAW * this.#queuedBuffers.length)
-    this.#queuedBuffers = []
-  }
-  prepareImageForRender(image: TexImageSource, position: Vec2, spriteOptions: SpriteOptions = {}): void {
-    const imageSize = new Size(image.width, image.height)
-    // Set up position buffer and give it the image data to calculate the rectangle to draw
-    this.bufferData(
-      this.#webgl.createBuffer(),
-      new Float32Array(getRectangleBufferData(position, spriteOptions?.size ?? imageSize))
-    )
-    this.sendBufferToAttribute(`aPosition`)
-
-    // Set up and send data to the texture coord attribute
-    // TODO: A SpriteSheet class (also to use for font/text renderer) that does like this and calculates precise arrays of positions, but caches those results (either as a pre-rendered <canvas> buffer, or just the positions)
-    this.bufferData(this.#webgl.createBuffer(), new Float32Array(getTexturePositionCoords(spriteOptions, imageSize)))
-    // this.bufferData(this.#webgl.createBuffer(), new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]))
-    this.sendBufferToAttribute(`aTexCoord`)
-
-    // Set up our texture
-    const texture = new Texture(this)
-    texture.init(this.#webgl.TEXTURE0, this.#webgl.TEXTURE_2D, image)
-  }
-  renderImage(image: TexImageSource, position: Vec2, spriteOptions: SpriteOptions = {}): void {
-    this.prepareImageForRender(image, position, spriteOptions)
-    this.drawTrianglesFromBuffer()
   }
   renderImagesFromQueue() {
     const { positionArray, textureCoordArray } = this.#queuedBuffers.reduce(
@@ -138,6 +118,7 @@ export default class ShaderProgram {
     this.bufferData(this.#webgl.createBuffer(), new Float32Array(textureCoordArray))
     this.sendBufferToAttribute(`aTexCoord`)
     this.drawTrianglesFromBuffer()
+    this.#queuedBuffers = []
   }
   resetCanvas() {
     this.clearCanvas()

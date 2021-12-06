@@ -27,7 +27,7 @@ async function main() {
   const texture = new Texture(shaderProgram)
   texture.init(webgl.TEXTURE0, webgl.TEXTURE_2D, image)
   const textRenderer = await createTextRenderer(shaderProgram)
-  textRenderer.renderText(`{{PK}}{{MN}}`)
+  textRenderer.renderText(`VERYGOODDEV`)
   // shaderProgram.addImageToRenderQueue(image, new Vec2(2, 2), {
   //   offset: new Vec2(8, 8),
   //   size: new Size(16, 16),

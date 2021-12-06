@@ -1,4 +1,5 @@
-import type { Size, Vec2 } from './util'
+import type { Size } from './util'
+import { Vec2 } from './util'
 
 interface SpriteData {
   offset: Vec2
@@ -28,10 +29,8 @@ export default class Spritesheet {
       throw new Error(`[Spritesheet.ts] No sprite defined with name ${name}`)
     }
     const { offset, size } = this.#spriteData.get(name)
-    offset.x *= size.width
-    offset.y *= size.height
     return {
-      offset,
+      offset: new Vec2(offset.x * size.width, offset.y * size.height),
       size,
       image: this.#image,
     }
