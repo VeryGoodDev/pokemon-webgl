@@ -2,7 +2,7 @@ import Game from './engine/Game'
 import { createShaderProgram } from './render/ShaderProgram'
 import { createTextRenderer } from './render/TextRenderer'
 import Texture from './textures'
-import { loadFile, loadImage, Size, Vec2 } from './util'
+import { loadFile, loadImage, Vec2 } from './util'
 
 async function main() {
   const canvas: HTMLCanvasElement = document.querySelector(`.screen`)

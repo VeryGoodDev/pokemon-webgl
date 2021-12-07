@@ -7,7 +7,7 @@ export default class Game {
     this.#shaderProgram = shaderProgram
   }
   draw() {
-    this.#shaderProgram.resetCanvas()
+    this.#shaderProgram.resetCanvas(`#bada55`)
   }
   async runLoop(): Promise<void> {
     // TODO: Update entities once there are any

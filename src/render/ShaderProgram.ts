@@ -93,13 +93,13 @@ export default class ShaderProgram {
   bufferData(bufferToBind: WebGLBuffer, dataToBuffer: BufferSource = null, options = {}): void {
     webglUtils.bufferData(this.#webgl, bufferToBind, dataToBuffer, options)
   }
-  clearCanvas() {
-    webglUtils.clearCanvas(this.#webgl)
+  clearCanvas(color = `#fff`) {
+    webglUtils.clearCanvas(this.#webgl, color)
   }
   drawTrianglesFromBuffer() {
     if (this.#queuedBuffers.length < 1) {
       console.warn(
-        `[ShaderProgram::drawTrianglesFromBuffer()] drawTrianglesFromBuffer was called, but the queue of buffers maintained by the ShaderProgram is empty. Depending on where the call to here came from, there may be no issue, but if anything is working as expected, consider trying to buffer any image(s) through the addImageToRenderQueue method and then call the renderImagesFromQueue method instead of calling drawTrianglesFromBuffer directly`
+        `[ShaderProgram::drawTrianglesFromBuffer()] drawTrianglesFromBuffer was called, but the queue of buffers maintained by the ShaderProgram is empty. Depending on where the call to here came from, there may be no issue, but if anything isn't working as expected, consider trying to buffer any image(s) through the addImageToRenderQueue method and then call the renderImagesFromQueue method instead of calling drawTrianglesFromBuffer directly`
       )
     }
     this.#webgl.drawArrays(this.#webgl.TRIANGLES, FIRST_DRAW_INDEX, NUM_INDICES_TO_DRAW * this.#queuedBuffers.length)
@@ -120,8 +120,8 @@ export default class ShaderProgram {
     this.drawTrianglesFromBuffer()
     this.#queuedBuffers = []
   }
-  resetCanvas() {
-    this.clearCanvas()
+  resetCanvas(color = `#fff`) {
+    this.clearCanvas(color)
     this.setViewportToCanvas()
   }
   sendBufferToAttribute(attributeName: string, options: webglUtils.SendBufferToAttributeOptions = {}): void {

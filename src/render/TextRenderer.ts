@@ -5,7 +5,7 @@ import type ShaderProgram from './ShaderProgram'
 const CHARACTER_WIDTH = 8
 const CHARACTER_HEIGHT = 8
 const MAX_CHARACTERS_PER_LINE = 18
-const FONT_CHARACTERS = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-?!/.,×():;[]~~0123456789é'… `
+const FONT_CHARACTERS = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-?!/.,×():;[]~~0123456789~'~ `
 const SPECIAL_CHARACTER_REGEX = /\{\{.+?\}\}/g
 
 function getCharacterArray(text: string): string[] {
@@ -19,6 +19,12 @@ function getCharacterArray(text: string): string[] {
       }
       return character
     })
+}
+function replaceShortcutWords(text: string): string {
+  return text
+    .replace(/pokemon/i, `POK{{e}}MON`)
+    .replace(/pokegear/i, `POK{{e}}GEAR`)
+    .replace(/\.\.\./, `{{...}}`)
 }
 
 export default class TextRenderer {
@@ -39,12 +45,13 @@ export default class TextRenderer {
     this.#shaderProgram.addImageToRenderQueue(image, position, { offset, size })
   }
   renderLine(text: string, position: Vec2): void {
-    if (text.length > MAX_CHARACTERS_PER_LINE) {
+    const characterArray = getCharacterArray(replaceShortcutWords(text))
+    if (characterArray.length > MAX_CHARACTERS_PER_LINE) {
       console.warn(
         `[TextRenderer::renderLine()] Attempting to render a line longer than ${MAX_CHARACTERS_PER_LINE} characters may cause unexpected visual behavior. Please reconsider your life choices (and use the getTextLines function exported out of this file to help separate long pieces of text into appropriately sized lines)`
       )
     }
-    getCharacterArray(text).forEach((character, idx) => {
+    characterArray.forEach((character, idx) => {
       this.#addCharacterToQueue(character, new Vec2(position.x + idx * CHARACTER_WIDTH, position.y))
     })
     this.#shaderProgram.renderImagesFromQueue()
@@ -57,6 +64,12 @@ function getSpecialCharacterByIndex(offset: Vec2): string {
   }
   if (offset.isEqualTo(new Vec2(2, 8))) {
     return `{{MN}}`
+  }
+  if (offset.isEqualTo(new Vec2(5, 9))) {
+    return `{{e}}`
+  }
+  if (offset.isEqualTo(new Vec2(7, 9))) {
+    return `{{...}}`
   }
   throw new RangeError(
     `[render/TextRenderer.ts] The offset ${offset.toString()} is not known to contain a special character`

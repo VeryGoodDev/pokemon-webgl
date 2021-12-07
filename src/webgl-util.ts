@@ -1,4 +1,5 @@
 // Types
+export type ColorBits = [number, number, number, number]
 export interface SendBufferToAttributeOptions {
   componentsPerIteration?: number
   sentDataType?: number
@@ -43,6 +44,24 @@ const DEFAULT_UPLOAD_OPTIONS: UploadOptions = {
   srcType: WebGL2RenderingContext.UNSIGNED_BYTE,
 }
 const NON_ZERO_BORDER_WARNING = `A border with a value not equaling 0 was provided to uploadImageToTexture, but according to the spec the value of this property must be 0. I don't know what the whole deal is with all of that, but if something isn't behaving quite right, this might be a good place to look`
+const HEX_COLOR_REGEX = /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i
+
+function convertHexToBits(hexString: string): ColorBits {
+  if (!HEX_COLOR_REGEX.test(hexString)) {
+    throw new Error(
+      `[clearCanvas()] color parameter must be either a valid hexidecimal string with 3, 4, 6, or 8 characters, or an array of 4 numbers from 0 to 255`
+    )
+  }
+  let hexValues = hexString.replace(`#`, ``)
+  const isAbbreviated = hexValues.length === 3 || hexValues.length === 4
+  // Turns #abc into #aabbcc, for correct parsing below
+  if (isAbbreviated) {
+    hexValues = hexValues.replace(/(.)/g, `$1$1`)
+  }
+  const [rHex, gHex, bHex, alpha = 1] = hexValues.match(/../g).map((hex) => parseInt(hex, 16) / 255)
+  return [rHex, gHex, bHex, alpha]
+  // The check at the beginning of the function means if length wasn't 3, 4, or 6, then it has to be 8
+}
 
 // Lower level WebGL shit
 export function bufferData(
@@ -155,7 +174,11 @@ export function disableTextureMagnification(webgl: WebGL2RenderingContext, targe
 }
 
 // Helper functions and such
-export function clearCanvas(webgl: WebGL2RenderingContext) {
-  webgl.clearColor(0, 0, 0, 0)
+export function clearCanvas(webgl: WebGL2RenderingContext, color: string | ColorBits = [0, 0, 0, 0]) {
+  let colorBits = color
+  if (typeof colorBits === `string`) {
+    colorBits = convertHexToBits(colorBits)
+  }
+  webgl.clearColor(...colorBits)
   webgl.clear(webgl.COLOR_BUFFER_BIT)
 }

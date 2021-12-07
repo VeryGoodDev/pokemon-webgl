@@ -1,4 +1,4 @@
-import { Size, Vec2 } from '../util'
+import type { Size, Vec2 } from '../util'
 
 export function getRectangleBufferData(position: Vec2, size: Size): number[] {
   const xStart = position.x
