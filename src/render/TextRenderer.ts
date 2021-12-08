@@ -1,4 +1,5 @@
 import Spritesheet from '../Spritesheet'
+import Texture from '../textures'
 import { loadImage, Size, Vec2 } from '../util'
 import type ShaderProgram from './ShaderProgram'
 
@@ -29,15 +30,13 @@ function replaceShortcutWords(text: string): string {
 
 class TextRenderer {
   #shaderProgram: ShaderProgram
+  #texture: Texture
   #fontSprites: Spritesheet
 
   constructor(shaderProgram: ShaderProgram, fontSprites: Spritesheet) {
     this.#shaderProgram = shaderProgram
+    this.#texture = new Texture(shaderProgram)
     this.#fontSprites = fontSprites
-  }
-
-  get sprites() {
-    return this.#fontSprites
   }
 
   #addCharacterToQueue(character: string, position: Vec2): void {
@@ -54,6 +53,7 @@ class TextRenderer {
     characterArray.forEach((character, idx) => {
       this.#addCharacterToQueue(character, new Vec2(position.x + idx * CHARACTER_WIDTH, position.y))
     })
+    this.#texture.init(WebGL2RenderingContext.TEXTURE0, WebGL2RenderingContext.TEXTURE_2D, this.#fontSprites.image)
     this.#shaderProgram.renderImagesFromQueue()
   }
 }

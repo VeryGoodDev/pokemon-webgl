@@ -22,10 +22,13 @@ export class Vec2 {
     this.y = y
   }
 
-  isEqualTo(vec2: Vec2) {
+  add(vec2: Vec2): Vec2 {
+    return new Vec2(this.x + vec2.x, this.y + vec2.y)
+  }
+  isEqualTo(vec2: Vec2): boolean {
     return this.x === vec2.x && this.y === vec2.y
   }
-  toString() {
+  toString(): string {
     return `[${this.x}, ${this.y}]`
   }
 }
