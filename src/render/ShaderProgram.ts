@@ -38,7 +38,7 @@ function getTexturePositionCoords(spriteOptions: SpriteOptions, imageSize: Size)
   return getRectangleBufferData(offset, size)
 }
 
-export default class ShaderProgram {
+class ShaderProgram {
   #program: WebGLProgram
   #webgl: WebGL2RenderingContext
   #aCache: Map<string, number>
@@ -151,7 +151,7 @@ function loadShader(webgl: WebGL2RenderingContext, type: number, source: string)
   }
   return shader
 }
-export function createShaderProgram(
+function createShaderProgram(
   webgl: WebGL2RenderingContext,
   vertexShaderSource: string,
   fragmentShaderSource: string
@@ -173,3 +173,6 @@ export function createShaderProgram(
   }
   return new ShaderProgram(shaderProgram, webgl)
 }
+
+export default ShaderProgram
+export { createShaderProgram }

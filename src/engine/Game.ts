@@ -1,6 +1,6 @@
 import type ShaderProgram from '../render/ShaderProgram'
 
-export default class Game {
+class Game {
   #shaderProgram: ShaderProgram
 
   constructor(shaderProgram: ShaderProgram) {
@@ -16,3 +16,5 @@ export default class Game {
     requestAnimationFrame(() => this.runLoop())
   }
 }
+
+export default Game

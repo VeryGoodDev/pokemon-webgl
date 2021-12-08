@@ -7,7 +7,7 @@ import {
   uploadImageToTexture,
 } from './webgl-util'
 
-export default class Texture {
+class Texture {
   #currentlyBoundTarget: number
   #shaderProgram: ShaderProgram
   #texture: WebGLTexture
@@ -56,3 +56,5 @@ export default class Texture {
     }
   }
 }
+
+export default Texture

@@ -7,7 +7,7 @@ interface SpriteData {
 }
 
 // Based heavily on the Spritesheet class from MethMethMethod's Super Mario JS tutorial. Source code for that https://github.com/meth-meth-method/super-mario
-export default class Spritesheet {
+class Spritesheet {
   #image: TexImageSource
   #size: Size
   #spriteData: Map<string, SpriteData>
@@ -36,3 +36,5 @@ export default class Spritesheet {
     }
   }
 }
+
+export default Spritesheet

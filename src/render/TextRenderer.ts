@@ -27,7 +27,7 @@ function replaceShortcutWords(text: string): string {
     .replace(/\.\.\./, `{{...}}`)
 }
 
-export default class TextRenderer {
+class TextRenderer {
   #shaderProgram: ShaderProgram
   #fontSprites: Spritesheet
 
@@ -93,14 +93,14 @@ function defineFontCharacters(fontSprites: Spritesheet, imageSize: Size): void {
     }
   }
 }
-export async function createTextRenderer(shaderProgram: ShaderProgram): Promise<TextRenderer> {
+async function createTextRenderer(shaderProgram: ShaderProgram): Promise<TextRenderer> {
   const fontImage = await loadImage(`src/assets/img/sprites/font.png`)
   const fontSprites = new Spritesheet(fontImage, new Size(CHARACTER_WIDTH, CHARACTER_HEIGHT))
   const imageSize = new Size(fontImage.width, fontImage.height)
   defineFontCharacters(fontSprites, imageSize)
   return new TextRenderer(shaderProgram, fontSprites)
 }
-export function getTextLines(text: string): string[] {
+function getTextLines(text: string): string[] {
   const words = text.split(` `)
   const lines = []
   let currentLine = ``
@@ -119,3 +119,6 @@ export function getTextLines(text: string): string[] {
   }
   return lines.map((line) => line.trim())
 }
+
+export default TextRenderer
+export { createTextRenderer, getTextLines }

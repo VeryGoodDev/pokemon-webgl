@@ -27,8 +27,8 @@ async function main() {
   const texture = new Texture(shaderProgram)
   texture.init(webgl.TEXTURE0, webgl.TEXTURE_2D, image)
   const textRenderer = await createTextRenderer(shaderProgram)
-  textRenderer.renderLine(`Are you a boy?`, new Vec2(8, 112))
-  textRenderer.renderLine(`Or are you a girl?`, new Vec2(8, 128))
+  textRenderer.renderLine(`Kira is the best`, new Vec2(8, 112))
+  textRenderer.renderLine(`Stardust is pretty`, new Vec2(8, 128))
   // const game = new Game(shaderProgram)
   // game.runLoop()
 }
