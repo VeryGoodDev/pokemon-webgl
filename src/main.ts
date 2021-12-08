@@ -3,7 +3,6 @@ import { createCharacterRenderer } from './render/CharacterRenderer'
 import { createShaderProgram } from './render/ShaderProgram'
 import { Facing, SpriteColors } from './render/spriteInfo/overworld-characters'
 import { createTextRenderer } from './render/TextRenderer'
-import Texture from './textures'
 import { loadFile, loadImage, Vec2 } from './util'
 
 async function main() {
@@ -26,8 +25,6 @@ async function main() {
   shaderProgram.use()
   shaderProgram.setResolutionThroughUniform(`uResolution`)
   shaderProgram.specifyTextureThroughUniform(`uImage`, 0)
-  // const texture = new Texture(shaderProgram)
-  // texture.init(webgl.TEXTURE0, webgl.TEXTURE_2D, image)
   const [textRenderer, characterRenderer] = await Promise.all([
     createTextRenderer(shaderProgram),
     createCharacterRenderer(shaderProgram),
