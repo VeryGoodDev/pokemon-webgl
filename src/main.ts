@@ -22,11 +22,7 @@ async function main() {
 
   // The main program this game engine will use all over the place
   const shaderProgram = createShaderProgram(webgl, vertexShaderSource, fragmentShaderSource)
-  shaderProgram.use()
-  shaderProgram.setResolutionThroughUniform(`uResolution`)
-  shaderProgram.specifyTextureThroughUniform(`uImage`, 0)
-  webgl.enable(webgl.BLEND)
-  webgl.blendFunc(webgl.ONE, webgl.ONE_MINUS_SRC_ALPHA)
+  shaderProgram.init()
   const [textRenderer, characterRenderer] = await Promise.all([
     createTextRenderer(shaderProgram),
     createCharacterRenderer(shaderProgram),

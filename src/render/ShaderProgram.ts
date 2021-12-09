@@ -112,6 +112,13 @@ class ShaderProgram {
     }
     this.#webgl.drawArrays(this.#webgl.TRIANGLES, FIRST_DRAW_INDEX, NUM_INDICES_TO_DRAW * this.#queuedBuffers.length)
   }
+  init(): void {
+    this.use()
+    this.setResolutionThroughUniform(`uResolution`)
+    this.specifyTextureThroughUniform(`uImage`, 0)
+    this.#webgl.enable(this.#webgl.BLEND)
+    this.#webgl.blendFunc(this.#webgl.ONE, this.#webgl.ONE_MINUS_SRC_ALPHA)
+  }
   renderFromQueue() {
     const { positionArray, textureCoordArray } = this.#queuedBuffers.reduce(
       (combinedBuffers, nextInQueue) => {
