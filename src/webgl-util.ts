@@ -7,10 +7,6 @@ export interface SendBufferToAttributeOptions {
   offsetBetweenIterations?: number
   offsetOfStart?: number
 }
-export interface TextureImageSource {
-  height: number
-  width: number
-}
 interface UploadOptions {
   /** 0 (default) is base image level, any other number n is the nth mipmap reduction level */
   detailLevel: number
@@ -46,10 +42,10 @@ const DEFAULT_UPLOAD_OPTIONS: UploadOptions = {
 const NON_ZERO_BORDER_WARNING = `A border with a value not equaling 0 was provided to uploadImageToTexture, but according to the spec the value of this property must be 0. I don't know what the whole deal is with all of that, but if something isn't behaving quite right, this might be a good place to look`
 const HEX_COLOR_REGEX = /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i
 
-function convertHexToBits(hexString: string): ColorBits {
+export function convertHexToBits(hexString: string): ColorBits {
   if (!HEX_COLOR_REGEX.test(hexString)) {
     throw new Error(
-      `[clearCanvas()] color parameter must be either a valid hexidecimal string with 3, 4, 6, or 8 characters, or an array of 4 numbers from 0 to 255`
+      `[convertHexToBits()] color parameter must be a valid hexidecimal string with 3, 4, 6, or 8 characters (not counting the hash at the beginning)`
     )
   }
   let hexValues = hexString.replace(`#`, ``)
@@ -60,7 +56,6 @@ function convertHexToBits(hexString: string): ColorBits {
   }
   const [rHex, gHex, bHex, alpha = 1] = hexValues.match(/../g).map((hex) => parseInt(hex, 16) / 255)
   return [rHex, gHex, bHex, alpha]
-  // The check at the beginning of the function means if length wasn't 3, 4, or 6, then it has to be 8
 }
 
 // Lower level WebGL shit

@@ -8,7 +8,7 @@ uniform vec2 uResolution;
 out vec2 vTexCoord;
 
 vec2 toClipSpace(vec2 coord, vec2 res) {
-  // Converts aPosition from pixels to a number between 0 and 1
+  // Converts coord from pixels to a number between 0 and 1
   vec2 zeroToOne = coord / res;
   // Converts zeroToOne to a number between 0 and 2
   vec2 zeroToTwo = zeroToOne * 2.0;

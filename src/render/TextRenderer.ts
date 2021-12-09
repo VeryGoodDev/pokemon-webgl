@@ -54,7 +54,7 @@ class TextRenderer {
       this.#addCharacterToQueue(character, new Vec2(position.x + idx * CHARACTER_WIDTH, position.y))
     })
     this.#texture.init(WebGL2RenderingContext.TEXTURE0, WebGL2RenderingContext.TEXTURE_2D, this.#fontSprites.image)
-    this.#shaderProgram.renderImagesFromQueue()
+    this.#shaderProgram.renderFromQueue()
   }
 }
 

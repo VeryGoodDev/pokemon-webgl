@@ -84,6 +84,14 @@ class ShaderProgram {
     return new ShaderProgram(this.#program, webgl)
   }
 
+  addColorToRenderQueue(
+    position: Vec2,
+    size: Size = new Size(this.#webgl.canvas.width, this.#webgl.canvas.height)
+  ): void {
+    // When rendering a solid color, the position and texture will always be identical in size and location
+    const buffer = getRectangleBufferData(position, size)
+    this.#queuedBuffers.push({ position: buffer, textureCoords: buffer })
+  }
   addImageToRenderQueue(image: TexImageSource, position: Vec2, spriteOptions: SpriteOptions = {}): void {
     const imageSize = new Size(image.width, image.height)
     const positionBuffer = getRectangleBufferData(position, spriteOptions.size ?? imageSize)
@@ -104,7 +112,7 @@ class ShaderProgram {
     }
     this.#webgl.drawArrays(this.#webgl.TRIANGLES, FIRST_DRAW_INDEX, NUM_INDICES_TO_DRAW * this.#queuedBuffers.length)
   }
-  renderImagesFromQueue() {
+  renderFromQueue() {
     const { positionArray, textureCoordArray } = this.#queuedBuffers.reduce(
       (combinedBuffers, nextInQueue) => {
         combinedBuffers.positionArray = combinedBuffers.positionArray.concat(nextInQueue.position)

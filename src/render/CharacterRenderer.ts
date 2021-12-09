@@ -50,7 +50,7 @@ class CharacterRenderer {
     const { offset, size } = this.#getSpriteData(spriteName, options)
     this.#shaderProgram.addImageToRenderQueue(this.#spriteImage, options.position, { offset, size })
     this.#texture.init(WebGL2RenderingContext.TEXTURE0, WebGL2RenderingContext.TEXTURE_2D, this.#spriteImage)
-    this.#shaderProgram.renderImagesFromQueue()
+    this.#shaderProgram.renderFromQueue()
   }
 }
 
