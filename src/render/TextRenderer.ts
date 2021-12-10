@@ -10,7 +10,7 @@ const FONT_CHARACTERS = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-?!
 const SPECIAL_CHARACTER_REGEX = /\{\{.+?\}\}/g
 
 function getCharacterArray(text: string): string[] {
-  const specialCharacters = text.match(SPECIAL_CHARACTER_REGEX) ?? []
+  const specialCharacters = text.match(SPECIAL_CHARACTER_REGEX) || []
   return text
     .replace(SPECIAL_CHARACTER_REGEX, `~`)
     .split(``)

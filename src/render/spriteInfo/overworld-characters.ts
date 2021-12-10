@@ -54,9 +54,9 @@ const OverworldCharacterSprites = {
 
 export type CharacterName = keyof typeof OverworldCharacterSprites
 function getSpriteByName(name: CharacterName, facing: FacingValue): SpriteFrames {
-  return (OverworldCharacterSprites[name][facing] as SpriteFrames).map((frame) => ({
-    offset: frame.offset,
-    size: frame.size || DEFAULT_SPRITE_SIZE,
+  return (OverworldCharacterSprites[name][facing] as SpriteFrames).map(({ offset, size = DEFAULT_SPRITE_SIZE }) => ({
+    offset: offset.multiply(new Vec2(size.width, size.height)),
+    size,
   })) as SpriteFrames
 }
 function getSpriteInColor(spriteInfo: SpriteFrames, color: SpriteColor): SpriteFrames {

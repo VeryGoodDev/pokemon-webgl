@@ -16,6 +16,8 @@ interface RenderCharacterOptions {
   color: SpriteColor
   facing: FacingValue
   isWalking?: boolean
+  mirrorX?: boolean
+  mirrorY?: boolean
   position: Vec2
 }
 
@@ -47,8 +49,14 @@ class CharacterRenderer {
     return options.isWalking ? walkingSprite : idleSprite
   }
   renderCharacter(spriteName: CharacterName, options: RenderCharacterOptions): void {
+    const { position, mirrorX, mirrorY } = options
     const { offset, size } = this.#getSpriteData(spriteName, options)
-    this.#shaderProgram.addImageToRenderQueue(this.#spriteImage, options.position, { offset, size })
+    this.#shaderProgram.addImageToRenderQueue(this.#spriteImage, position, {
+      offset,
+      size,
+      mirrorX,
+      mirrorY,
+    })
     this.#texture.init(WebGL2RenderingContext.TEXTURE0, WebGL2RenderingContext.TEXTURE_2D, this.#spriteImage)
     this.#shaderProgram.renderFromQueue()
   }

@@ -27,15 +27,35 @@ async function main() {
     createTextRenderer(shaderProgram),
     createCharacterRenderer(shaderProgram),
   ])
-  new BackgroundRenderer(shaderProgram).renderBackground(`#6969`)
-  textRenderer.renderLine(`Kira is the best`, new Vec2(8, 112))
-  textRenderer.renderLine(`Stardust is pretty`, new Vec2(8, 128))
-  characterRenderer.renderCharacter(`PLAYER_MALE`, {
-    position: new Vec2(24, 24),
-    color: SpriteColors.RED,
-    facing: Facing.FRONT,
-    // isWalking: true,
-  })
+  const backgroundRenderer = new BackgroundRenderer(shaderProgram)
+  let x = 1
+  let isWalking = true
+  let goingRight = true
+  const loop = () => {
+    shaderProgram.resetCanvas(`#0001`)
+    backgroundRenderer.renderBackground(`#6969`)
+    characterRenderer.renderCharacter(`PLAYER_MALE`, {
+      position: new Vec2(x, 64),
+      color: SpriteColors.RED,
+      facing: Facing.SIDE,
+      isWalking,
+      mirrorX: goingRight,
+    })
+    textRenderer.renderLine(`Kira is the best`, new Vec2(8, 112))
+    textRenderer.renderLine(`Stardust is pretty`, new Vec2(8, 128))
+    if (x > 144) {
+      goingRight = false
+    }
+    if (x < 1) {
+      goingRight = true
+    }
+    x = goingRight ? x + 1 : x - 1
+    if (x % 12 === 0) {
+      isWalking = !isWalking
+    }
+    requestAnimationFrame(loop)
+  }
+  loop()
   // const game = new Game(shaderProgram)
   // game.runLoop()
 }

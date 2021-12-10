@@ -5,6 +5,8 @@ import * as webglUtils from '../webgl-util'
 interface SpriteOptions {
   offset?: Vec2
   size?: Size
+  mirrorX?: boolean
+  mirrorY?: boolean
 }
 interface QueuedBuffer {
   position: number[]
@@ -21,7 +23,6 @@ function getDefaultSize(webgl: WebGL2RenderingContext): Size {
   }
 }
 function getTexturePositionCoords(spriteOptions: SpriteOptions, imageSize: Size): number[] {
-  // NOTE: All four values that
   let xStart = 0
   let yStart = 0
   if (spriteOptions?.offset) {
@@ -35,7 +36,9 @@ function getTexturePositionCoords(spriteOptions: SpriteOptions, imageSize: Size)
   }
   const offset = new Vec2(xStart, yStart)
   const size = new Size(width, height)
-  return getRectangleBufferData(offset, size)
+  const { mirrorX, mirrorY } = spriteOptions
+  // This is the only place the mirroring options are actually used. Position buffer should be where we want the pixels to go, but where to map each texel depends on if we want it mirrored
+  return getRectangleBufferData(offset, size, mirrorX, mirrorY)
 }
 
 class ShaderProgram {
@@ -94,7 +97,7 @@ class ShaderProgram {
   }
   addImageToRenderQueue(image: TexImageSource, position: Vec2, spriteOptions: SpriteOptions = {}): void {
     const imageSize = new Size(image.width, image.height)
-    const positionBuffer = getRectangleBufferData(position, spriteOptions.size ?? imageSize)
+    const positionBuffer = getRectangleBufferData(position, spriteOptions.size || imageSize)
     const textureCoordsBuffer = getTexturePositionCoords(spriteOptions, imageSize)
     this.#queuedBuffers.push({ position: positionBuffer, textureCoords: textureCoordsBuffer })
   }
