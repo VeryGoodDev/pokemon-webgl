@@ -1,4 +1,4 @@
-import Game from './engine/Game'
+import Game from './Game'
 import BackgroundRenderer from './render/BackgroundRenderer'
 import { createCharacterRenderer } from './render/CharacterRenderer'
 import { createShaderProgram } from './render/ShaderProgram'
@@ -33,7 +33,7 @@ async function main() {
   let goingRight = true
   const loop = () => {
     shaderProgram.resetCanvas(`#0001`)
-    backgroundRenderer.renderBackground(`#6969`)
+    backgroundRenderer.renderBackground(`#696f`)
     characterRenderer.renderCharacter(`PLAYER_MALE`, {
       position: new Vec2(x, 64),
       color: SpriteColors.RED,
@@ -53,7 +53,7 @@ async function main() {
     if (x % 12 === 0) {
       isWalking = !isWalking
     }
-    requestAnimationFrame(loop)
+    // requestAnimationFrame(loop)
   }
   loop()
   // const game = new Game(shaderProgram)

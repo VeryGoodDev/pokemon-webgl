@@ -1,12 +1,9 @@
 import Layer from './layers/Layer'
-import type ShaderProgram from './ShaderProgram'
 
-class Composer {
-  #shaderProgram: ShaderProgram
+class LayerComposer {
   #layers: Layer[]
 
-  constructor(shaderProgram: ShaderProgram) {
-    this.#shaderProgram = shaderProgram
+  constructor() {
     this.#layers = []
   }
 
@@ -20,4 +17,4 @@ class Composer {
   }
 }
 
-export default Composer
+export default LayerComposer
