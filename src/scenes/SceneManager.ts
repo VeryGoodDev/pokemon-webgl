@@ -5,6 +5,8 @@
 // TODO: Sets up scene collision boundaries
 // TODO: Determine background color, provide method to get that info (will usually be the out-of-bounds gray AFAIK)
 
+// TODO: Entity class, to track entity sprite name, color, internally track facing, handle render, etc.
+
 class SceneManager {}
 
 export default SceneManager
