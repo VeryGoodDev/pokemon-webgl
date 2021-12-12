@@ -60,9 +60,9 @@ function getSpriteByName(name: CharacterName, facing: FacingValue): SpriteFrames
   })) as SpriteFrames
 }
 function getSpriteInColor(spriteInfo: SpriteFrames, color: SpriteColor): SpriteFrames {
-  return spriteInfo.map((frame) => ({
-    offset: frame.offset.add(ColorOffsetVectors[color]),
-    size: frame.size || DEFAULT_SPRITE_SIZE,
+  return spriteInfo.map(({ offset, size = DEFAULT_SPRITE_SIZE }) => ({
+    offset: offset.add(ColorOffsetVectors[color].multiply(new Vec2(size.width, size.height))),
+    size,
   })) as SpriteFrames
 }
 
