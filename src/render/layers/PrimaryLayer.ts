@@ -1,5 +1,5 @@
-import SceneManager from '../../scenes/SceneManager'
-import BackgroundRenderer from '../BackgroundRenderer'
+import type SceneManager from '../../scenes/SceneManager'
+import type BackgroundRenderer from '../BackgroundRenderer'
 import type EntityRenderer from '../EntityRenderer'
 import Layer from './Layer'
 
@@ -17,8 +17,11 @@ class PrimaryLayer extends Layer {
 
   draw(): void {
     const scene = this.#sceneManager.getCurrentScene()
-    scene.drawBackground(this.#backgroundRenderer)
-    scene.drawEntities(this.#entityRenderer)
+    if (scene.isDirty) {
+      scene.drawBackground(this.#backgroundRenderer)
+      scene.drawEntities(this.#entityRenderer)
+      scene.setClean()
+    }
   }
 }
 

@@ -20,7 +20,7 @@ async function main() {
   const shaderProgram = createShaderProgram(webgl, vertexShaderSource, fragmentShaderSource)
   shaderProgram.init()
   const game = await createGame(shaderProgram)
-  game.draw()
-  // game.runLoop()
+  // game.draw()
+  game.runLoop()
 }
 main()

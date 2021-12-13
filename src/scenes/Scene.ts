@@ -1,18 +1,26 @@
 import type Entity from '../entities/Entity'
-import BackgroundRenderer from '../render/BackgroundRenderer'
-import EntityRenderer from '../render/EntityRenderer'
+import type PlayerCharacter from '../entities/PlayerCharacter'
+import type BackgroundRenderer from '../render/BackgroundRenderer'
+import type EntityRenderer from '../render/EntityRenderer'
 import { Size, Vec2 } from '../util'
 
 export interface SceneData {
+  player: PlayerCharacter
   entities: Entity[]
   background: TexImageSource
 }
 
 class Scene {
   #sceneData: SceneData
+  #isDirty: boolean
 
   constructor(sceneData: SceneData) {
     this.#sceneData = sceneData
+    this.#isDirty = true
+  }
+
+  get isDirty(): boolean {
+    return this.#isDirty
   }
 
   drawBackground(renderer: BackgroundRenderer): void {
@@ -24,9 +32,16 @@ class Scene {
     })
   }
   drawEntities(renderer: EntityRenderer): void {
+    this.#sceneData.player.draw(renderer)
     for (const entity of this.#sceneData.entities) {
       entity.draw(renderer)
     }
+  }
+  setClean(): void {
+    this.#isDirty = false
+  }
+  setDirty(): void {
+    this.#isDirty = true
   }
   // update(): void {}
 }

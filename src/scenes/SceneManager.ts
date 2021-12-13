@@ -9,8 +9,8 @@ import Scene from './Scene'
 
 // TODO: Determine background color, provide method to get that info (will usually be the out-of-bounds gray AFAIK)
 export interface EntityUpdateData {
-  position: Vec2
-  direction: Direction
+  position?: Vec2
+  direction?: Direction
 }
 interface SceneState {
   backdropColor: string

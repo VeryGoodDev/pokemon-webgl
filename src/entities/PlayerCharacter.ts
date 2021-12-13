@@ -20,30 +20,31 @@ function convertDirectionToFacing(direction: Direction): FacingValue {
 class PlayerCharacter extends Entity {
   #spriteName: EntityName
   #spriteColor: SpriteColor
-  #direction: Direction
   #isOnBike: boolean
 
   constructor(playerName: string, spriteName: EntityName, spriteColor: SpriteColor) {
-    super(playerName, new Vec2(64, 64))
+    super(playerName, new Vec2(64, 64), Direction.SOUTH)
     this.#spriteName = spriteName
     this.#spriteColor = spriteColor
-    this.#direction = Direction.SOUTH
     this.#isOnBike = false
   }
 
   draw(entityRenderer: EntityRenderer) {
     entityRenderer.renderEntity(this.#spriteName, {
       color: this.#spriteColor,
-      facing: convertDirectionToFacing(this.#direction),
+      facing: convertDirectionToFacing(this.direction),
       // FIXME: Set to true when direction input is pressed, false when released/finished walking
       isWalking: false,
-      mirrorX: this.#direction === Direction.EAST,
+      mirrorX: this.direction === Direction.EAST,
       position: this.position,
     })
   }
   update(updateData: EntityUpdateData) {
-    if (this.update) {
-      console.log(updateData)
+    if (updateData.position) {
+      this.position = updateData.position
+    }
+    if (updateData.direction) {
+      this.direction = updateData.direction
     }
   }
 }

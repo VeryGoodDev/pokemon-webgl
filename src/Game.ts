@@ -10,25 +10,29 @@ import type ShaderProgram from './render/ShaderProgram'
 import { SpriteColors } from './render/spriteInfo/overworld-characters'
 import { createTextRenderer } from './render/TextRenderer'
 import Scene from './scenes/Scene'
-import SceneManager from './scenes/SceneManager'
+import SceneManager, { Direction } from './scenes/SceneManager'
 import { loadImage } from './util'
 
 class Game {
   #shaderProgram: ShaderProgram
   #layerComposer: LayerComposer
+  #sceneManager: SceneManager
 
-  constructor(shaderProgram: ShaderProgram, layerComposer: LayerComposer) {
+  constructor(shaderProgram: ShaderProgram, layerComposer: LayerComposer, sceneManager: SceneManager) {
     this.#shaderProgram = shaderProgram
     this.#layerComposer = layerComposer
+    this.#sceneManager = sceneManager
   }
   draw() {
     this.#shaderProgram.resetCanvas(`#0001`)
     this.#layerComposer.drawLayers()
   }
   async runLoop(): Promise<void> {
-    // TODO: Update entities once there are any
-    // this.update() or something
-    this.draw()
+    if (this.#sceneManager.getCurrentScene().isDirty) {
+      // TODO: Update entities once there are any
+      // this.update() or something
+      this.draw()
+    }
     requestAnimationFrame(() => this.runLoop())
   }
 }
@@ -43,11 +47,37 @@ async function createGame(shaderProgram: ShaderProgram): Promise<Game> {
   const backgroundRenderer = new BackgroundRenderer(shaderProgram)
 
   const sceneManager = new SceneManager()
+  const player = new PlayerCharacter(`Dev`, `PLAYER_MALE`, SpriteColors.RED)
   const playerRoomScene = new Scene({
-    entities: [new PlayerCharacter(`Dev`, `PLAYER_MALE`, SpriteColors.RED)],
+    player,
+    entities: [],
     background: playerRoomBackground,
   })
   sceneManager.setCurrentScene(playerRoomScene)
+
+  window.addEventListener(`keydown`, (evt) => {
+    const oldDirection = player.direction
+    let direction = oldDirection
+    if (evt.code === `KeyE`) {
+      direction = Direction.NORTH
+    }
+    if (evt.code === `KeyD`) {
+      direction = Direction.SOUTH
+    }
+    if (evt.code === `KeyF`) {
+      direction = Direction.EAST
+    }
+    if (evt.code === `KeyS`) {
+      direction = Direction.WEST
+    }
+    if (direction !== oldDirection) {
+      player.update({
+        position: player.position,
+        direction,
+      })
+      playerRoomScene.setDirty()
+    }
+  })
 
   // The order in which these are added matters, as the game will render each layer in the order below, with later layers being added on top of previous ones. So they are added in order of back to front
   const layerComposer = new LayerComposer()
@@ -55,7 +85,7 @@ async function createGame(shaderProgram: ShaderProgram): Promise<Game> {
   layerComposer.addLayer(new PrimaryLayer(sceneManager, backgroundRenderer, entityRenderer))
   layerComposer.addLayer(new TextLayer(textRenderer))
 
-  return new Game(shaderProgram, layerComposer)
+  return new Game(shaderProgram, layerComposer, sceneManager)
 }
 
 export default Game
