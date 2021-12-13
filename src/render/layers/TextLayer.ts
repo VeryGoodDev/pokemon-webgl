@@ -11,8 +11,11 @@ class TextLayer extends Layer {
     this.#textRenderer = textRenderer
   }
   draw(): void {
-    this.#textRenderer.renderLine(`Kira is the best`, new Vec2(8, 112))
-    this.#textRenderer.renderLine(`Stardust is pretty`, new Vec2(8, 128))
+    if (this.draw) {
+      // TODO:
+    }
+    // this.#textRenderer.renderLine(`Kira is the best`, new Vec2(8, 112))
+    // this.#textRenderer.renderLine(`Stardust is pretty`, new Vec2(8, 128))
   }
 }
 

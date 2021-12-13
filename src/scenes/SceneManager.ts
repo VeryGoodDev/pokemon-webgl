@@ -5,11 +5,15 @@
 // TODO: Sets up scene collision boundaries
 
 import type { Vec2 } from '../util'
+import Scene from './Scene'
 
 // TODO: Determine background color, provide method to get that info (will usually be the out-of-bounds gray AFAIK)
 export interface EntityUpdateData {
   position: Vec2
   direction: Direction
+}
+interface SceneState {
+  backdropColor: string
 }
 
 export enum Direction {
@@ -19,6 +23,20 @@ export enum Direction {
   WEST = `WEST`,
 }
 
-class SceneManager {}
+class SceneManager {
+  #currentScene: Scene
+  #state: SceneState
+
+  constructor() {
+    this.#currentScene = null
+  }
+
+  getCurrentScene(): Scene {
+    return this.#currentScene
+  }
+  setCurrentScene(scene: Scene): void {
+    this.#currentScene = scene
+  }
+}
 
 export default SceneManager
