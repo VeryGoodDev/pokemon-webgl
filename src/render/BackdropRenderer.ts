@@ -3,7 +3,7 @@ import { Vec2 } from '../util'
 import { convertHexToBits } from '../webgl-util'
 import ShaderProgram from './ShaderProgram'
 
-class BackgroundRenderer {
+class BackdropRenderer {
   #shaderProgram: ShaderProgram
   #texture: Texture
 
@@ -12,7 +12,7 @@ class BackgroundRenderer {
     this.#texture = new Texture(shaderProgram)
   }
 
-  renderBackground(color: string): void {
+  renderBackdrop(color: string): void {
     const colorBits = convertHexToBits(color)
     this.#shaderProgram.addColorToRenderQueue(new Vec2(0, 0))
     this.#texture.init(
@@ -24,4 +24,4 @@ class BackgroundRenderer {
   }
 }
 
-export default BackgroundRenderer
+export default BackdropRenderer

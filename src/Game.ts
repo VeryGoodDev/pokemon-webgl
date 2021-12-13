@@ -1,7 +1,7 @@
-import BackgroundRenderer from './render/BackgroundRenderer'
+import BackdropRenderer from './render/BackdropRenderer'
 import { createEntityRenderer } from './render/EntityRenderer'
 import LayerComposer from './render/LayerComposer'
-import BackgroundLayer from './render/layers/BackgroundLayer'
+import BackdropLayer from './render/layers/BackdropLayer'
 import PrimaryLayer from './render/layers/PrimaryLayer'
 import TextLayer from './render/layers/TextLayer'
 import type ShaderProgram from './render/ShaderProgram'
@@ -32,11 +32,11 @@ async function createGame(shaderProgram: ShaderProgram): Promise<Game> {
     createTextRenderer(shaderProgram),
     createEntityRenderer(shaderProgram),
   ])
-  const backgroundRenderer = new BackgroundRenderer(shaderProgram)
+  const backdropRenderer = new BackdropRenderer(shaderProgram)
 
   // The order in which these are added matters, as the game will render each layer in the order below, with later layers being added on top of previous ones. So they are added in order of back to front
   const layerComposer = new LayerComposer()
-  layerComposer.addLayer(new BackgroundLayer(backgroundRenderer))
+  layerComposer.addLayer(new BackdropLayer(backdropRenderer))
   layerComposer.addLayer(new PrimaryLayer(entityRenderer))
   layerComposer.addLayer(new TextLayer(textRenderer))
 
