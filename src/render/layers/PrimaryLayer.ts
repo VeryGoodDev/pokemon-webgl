@@ -1,18 +1,18 @@
 import { Vec2 } from '../../util'
-import type CharacterRenderer from '../CharacterRenderer'
+import type EntityRenderer from '../EntityRenderer'
 import { Facing, SpriteColors } from '../spriteInfo/overworld-characters'
 import Layer from './Layer'
 
 class PrimaryLayer extends Layer {
-  #characterRenderer: CharacterRenderer
+  #entityRenderer: EntityRenderer
   // TODO: Eventually this should take in a SceneManager or something along those lines, where it would handle swapping a Scene, and a Scene would contain background data, entities, etc.
-  constructor(characterRenderer: CharacterRenderer) {
+  constructor(entityRenderer: EntityRenderer) {
     super()
-    this.#characterRenderer = characterRenderer
+    this.#entityRenderer = entityRenderer
   }
 
   draw(): void {
-    this.#characterRenderer.renderCharacter(`PLAYER_MALE`, {
+    this.#entityRenderer.renderEntity(`PLAYER_MALE`, {
       position: new Vec2(16, 64),
       color: SpriteColors.RED,
       facing: Facing.SIDE,

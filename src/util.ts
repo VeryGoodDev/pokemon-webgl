@@ -1,3 +1,8 @@
+let currentId = 1
+export function getUniqueId(): string {
+  return `${currentId++}`.padStart(6, `0`)
+}
+
 export function loadFile(url: string): Promise<string> {
   return fetch(url).then((res) => res.text())
 }

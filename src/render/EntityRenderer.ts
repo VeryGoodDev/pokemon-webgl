@@ -25,7 +25,7 @@ function createKey(name: CharacterName, facing: FacingValue, color: SpriteColor)
   return `${name}.${facing}.${color}`
 }
 
-class CharacterRenderer {
+class EntityRenderer {
   #shaderProgram: ShaderProgram
   #texture: Texture
   #spriteImage: TexImageSource
@@ -48,7 +48,7 @@ class CharacterRenderer {
     const [idleSprite, walkingSprite] = spriteData
     return options.isWalking ? walkingSprite : idleSprite
   }
-  renderCharacter(spriteName: CharacterName, options: RenderCharacterOptions): void {
+  renderEntity(spriteName: CharacterName, options: RenderCharacterOptions): void {
     const { position, mirrorX, mirrorY } = options
     const { offset, size } = this.#getSpriteData(spriteName, options)
     this.#shaderProgram.addImageToRenderQueue(this.#spriteImage, position, {
@@ -62,10 +62,10 @@ class CharacterRenderer {
   }
 }
 
-async function createCharacterRenderer(shaderProgram: ShaderProgram): Promise<CharacterRenderer> {
+async function createEntityRenderer(shaderProgram: ShaderProgram): Promise<EntityRenderer> {
   const spriteImg = await loadImage(`src/assets/img/sprites/overworld-characters.png`)
-  return new CharacterRenderer(shaderProgram, spriteImg)
+  return new EntityRenderer(shaderProgram, spriteImg)
 }
 
-export default CharacterRenderer
-export { createCharacterRenderer }
+export default EntityRenderer
+export { createEntityRenderer }
