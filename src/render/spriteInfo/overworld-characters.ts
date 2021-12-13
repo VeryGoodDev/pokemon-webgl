@@ -33,7 +33,7 @@ export type FacingValue = typeof Facing[keyof typeof Facing]
 export type SpriteInfo = Record<FacingValue, SpriteFrames>
 const DEFAULT_SPRITE_SIZE = new Size(16, 16)
 
-const OverworldCharacterSprites = {
+const OverworldEntitySprites = {
   PLAYER_MALE: {
     [Facing.FRONT]: [{ offset: new Vec2(0, 0) }, { offset: new Vec2(3, 0) }],
     [Facing.BACK]: [{ offset: new Vec2(1, 0) }, { offset: new Vec2(4, 0) }],
@@ -52,9 +52,9 @@ const OverworldCharacterSprites = {
   },
 } as const
 
-export type CharacterName = keyof typeof OverworldCharacterSprites
-function getSpriteByName(name: CharacterName, facing: FacingValue): SpriteFrames {
-  return (OverworldCharacterSprites[name][facing] as SpriteFrames).map(({ offset, size = DEFAULT_SPRITE_SIZE }) => ({
+export type EntityName = keyof typeof OverworldEntitySprites
+function getSpriteByName(name: EntityName, facing: FacingValue): SpriteFrames {
+  return (OverworldEntitySprites[name][facing] as SpriteFrames).map(({ offset, size = DEFAULT_SPRITE_SIZE }) => ({
     offset: offset.multiply(new Vec2(size.width, size.height)),
     size,
   })) as SpriteFrames
