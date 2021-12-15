@@ -55,6 +55,7 @@ async function createGame(shaderProgram: ShaderProgram): Promise<Game> {
   })
   sceneManager.setCurrentScene(playerRoomScene)
 
+  // TODO: Replace with KeyboardInput class
   window.addEventListener(`keydown`, (evt) => {
     const oldDirection = player.direction
     let direction = oldDirection

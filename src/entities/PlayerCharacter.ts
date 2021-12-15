@@ -20,12 +20,14 @@ function convertDirectionToFacing(direction: Direction): FacingValue {
 class PlayerCharacter extends Entity {
   #spriteName: EntityName
   #spriteColor: SpriteColor
+  #isMoving: boolean
   #isOnBike: boolean
 
   constructor(playerName: string, spriteName: EntityName, spriteColor: SpriteColor) {
     super(playerName, new Vec2(64, 64), Direction.SOUTH)
     this.#spriteName = spriteName
     this.#spriteColor = spriteColor
+    this.#isMoving = false
     this.#isOnBike = false
   }
 

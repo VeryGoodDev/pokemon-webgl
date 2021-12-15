@@ -24,3 +24,9 @@ async function main() {
   game.runLoop()
 }
 main()
+
+enum TestEnum {
+  UP = `UP`,
+  DOWN = `DOWN`,
+}
+window.TEST_ENUM = TestEnum
