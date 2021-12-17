@@ -4,8 +4,12 @@
 // TODO: Handle scene changes, including background swap, entrance point, exit points, etc.
 // TODO: Sets up scene collision boundaries
 
+import type KeyboardInput from '../KeyboardInput'
+import type { StateChange } from '../KeyboardInput'
 import type { Vec2 } from '../util'
-import Scene from './Scene'
+import type Scene from './Scene'
+import { PlayerInput } from '../KeyboardInput'
+import { Colors } from '../constants'
 
 // TODO: Determine background color, provide method to get that info (will usually be the out-of-bounds gray AFAIK)
 export interface EntityUpdateData {
@@ -14,6 +18,8 @@ export interface EntityUpdateData {
 }
 interface SceneState {
   backdropColor: string
+  heldDirectionInputs: PlayerInput[]
+  playerIsMoving: boolean
 }
 
 export enum Direction {
@@ -23,12 +29,43 @@ export enum Direction {
   WEST = `WEST`,
 }
 
+const INITIAL_SCENE_STATE: SceneState = {
+  // FIXME: Eventually should be whatever the backdrop color is of the loaded game, or beginning of game if no load
+  backdropColor: Colors.OUT_OF_BOUNDS_BACKGROUND,
+  heldDirectionInputs: [],
+  playerIsMoving: false,
+}
+
+function calculateCurrentDirection(heldDirectionInputs: PlayerInput[]): Direction {
+  // Based on what I've observed in my emulator, this is the order of which direction input gets the highest priority when multiple are held. So this just goes down the conditionals until it finds a direction to match, or returns nothing if there are no matches (aka there are no direction inputs being held down at the moment)
+  if (heldDirectionInputs.includes(PlayerInput.DPAD_UP)) {
+    return Direction.NORTH
+  }
+  if (heldDirectionInputs.includes(PlayerInput.DPAD_DOWN)) {
+    return Direction.SOUTH
+  }
+  if (heldDirectionInputs.includes(PlayerInput.DPAD_LEFT)) {
+    return Direction.WEST
+  }
+  if (heldDirectionInputs.includes(PlayerInput.DPAD_RIGHT)) {
+    return Direction.EAST
+  }
+  return null
+}
+
 class SceneManager {
   #currentScene: Scene
-  #state: SceneState
+  #keyboardInput: KeyboardInput
+  #state: SceneState = INITIAL_SCENE_STATE
 
-  constructor() {
+  constructor(keyboardInput: KeyboardInput) {
     this.#currentScene = null
+    this.#keyboardInput = keyboardInput
+    this.#keyboardInput.subscribe((stateChange) => this.#handleInput(stateChange))
+  }
+
+  get currentDirection(): Direction {
+    return calculateCurrentDirection(this.#state.heldDirectionInputs)
   }
 
   getCurrentScene(): Scene {
@@ -36,6 +73,41 @@ class SceneManager {
   }
   setCurrentScene(scene: Scene): void {
     this.#currentScene = scene
+  }
+
+  #handleInput({ action, enabled }: StateChange): void {
+    const { heldDirectionInputs } = this.#state
+    switch (action) {
+      // Movement changes
+      case PlayerInput.DPAD_UP:
+      case PlayerInput.DPAD_DOWN:
+      case PlayerInput.DPAD_LEFT:
+      case PlayerInput.DPAD_RIGHT:
+        if (enabled) {
+          heldDirectionInputs.push(action)
+        } else {
+          heldDirectionInputs.splice(heldDirectionInputs.indexOf(action), 1)
+        }
+        break
+
+      // Functional buttons
+      case PlayerInput.BUTTON_ACTION:
+        // TODO: Try to pick up item, talk to NPC, read sign, etc.
+        console.log(`${PlayerInput.BUTTON_ACTION} ${enabled ? `pressed` : `released`}`)
+        break
+      case PlayerInput.BUTTON_CANCEL:
+        // TODO: Continue through dialog, go back one in menu, etc.
+        console.log(`${PlayerInput.BUTTON_CANCEL} ${enabled ? `pressed` : `released`}`)
+        break
+      case PlayerInput.BUTTON_START:
+        // TODO: Toggle menu visible if in top level menu or options menu
+        console.log(`${PlayerInput.BUTTON_START} ${enabled ? `pressed` : `released`}`)
+        break
+      case PlayerInput.BUTTON_SELECT:
+        // TODO: Use registered item or tell player they can register an item
+        console.log(`${PlayerInput.BUTTON_SELECT} ${enabled ? `pressed` : `released`}`)
+        break
+    }
   }
 }
 

@@ -8,12 +8,24 @@ export enum PlayerInput {
   BUTTON_START = `BUTTON_START`,
   BUTTON_SELECT = `BUTTON_SELECT`,
 }
-interface StateChange {
+export interface StateChange {
   action: PlayerInput
   enabled: boolean
 }
 type Listener = (stateChange: StateChange) => void
 
+const DEFAULT_KEY_BINDINGS = (function setupDefaultKeyBindings() {
+  const map = new Map<string, PlayerInput>()
+  map.set(`KeyS`, PlayerInput.DPAD_LEFT)
+  map.set(`KeyD`, PlayerInput.DPAD_DOWN)
+  map.set(`KeyF`, PlayerInput.DPAD_RIGHT)
+  map.set(`KeyE`, PlayerInput.DPAD_UP)
+  map.set(`KeyJ`, PlayerInput.BUTTON_ACTION)
+  map.set(`KeyK`, PlayerInput.BUTTON_CANCEL)
+  map.set(`KeyN`, PlayerInput.BUTTON_START)
+  map.set(`Space`, PlayerInput.BUTTON_SELECT)
+  return map
+})()
 const PlayerInputValues = Object.values(PlayerInput)
 function validateKeyBindings(keyBindings: Map<string, PlayerInput>): boolean {
   const keyBindingValues = [...keyBindings.values()]
@@ -76,3 +88,4 @@ class KeyboardInput {
 }
 
 export default KeyboardInput
+export { DEFAULT_KEY_BINDINGS }

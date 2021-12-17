@@ -1,4 +1,5 @@
 import PlayerCharacter from './entities/PlayerCharacter'
+import KeyboardInput, { DEFAULT_KEY_BINDINGS } from './KeyboardInput'
 import BackdropRenderer from './render/BackdropRenderer'
 import BackgroundRenderer from './render/BackgroundRenderer'
 import { createEntityRenderer } from './render/EntityRenderer'
@@ -10,7 +11,7 @@ import type ShaderProgram from './render/ShaderProgram'
 import { SpriteColors } from './render/spriteInfo/overworld-characters'
 import { createTextRenderer } from './render/TextRenderer'
 import Scene from './scenes/Scene'
-import SceneManager, { Direction } from './scenes/SceneManager'
+import SceneManager from './scenes/SceneManager'
 import { loadImage } from './util'
 
 class Game {
@@ -46,7 +47,11 @@ async function createGame(shaderProgram: ShaderProgram): Promise<Game> {
   const backdropRenderer = new BackdropRenderer(shaderProgram)
   const backgroundRenderer = new BackgroundRenderer(shaderProgram)
 
-  const sceneManager = new SceneManager()
+  const keyboardInput = new KeyboardInput()
+  keyboardInput.setKeyBindings(DEFAULT_KEY_BINDINGS)
+  keyboardInput.init()
+
+  const sceneManager = new SceneManager(keyboardInput)
   const player = new PlayerCharacter(`Dev`, `PLAYER_MALE`, SpriteColors.RED)
   const playerRoomScene = new Scene({
     player,
@@ -54,31 +59,6 @@ async function createGame(shaderProgram: ShaderProgram): Promise<Game> {
     background: playerRoomBackground,
   })
   sceneManager.setCurrentScene(playerRoomScene)
-
-  // TODO: Replace with KeyboardInput class
-  window.addEventListener(`keydown`, (evt) => {
-    const oldDirection = player.direction
-    let direction = oldDirection
-    if (evt.code === `KeyE`) {
-      direction = Direction.NORTH
-    }
-    if (evt.code === `KeyD`) {
-      direction = Direction.SOUTH
-    }
-    if (evt.code === `KeyF`) {
-      direction = Direction.EAST
-    }
-    if (evt.code === `KeyS`) {
-      direction = Direction.WEST
-    }
-    if (direction !== oldDirection) {
-      player.update({
-        position: player.position,
-        direction,
-      })
-      playerRoomScene.setDirty()
-    }
-  })
 
   // The order in which these are added matters, as the game will render each layer in the order below, with later layers being added on top of previous ones. So they are added in order of back to front
   const layerComposer = new LayerComposer()

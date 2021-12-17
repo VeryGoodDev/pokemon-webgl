@@ -37,6 +37,12 @@ class Scene {
       entity.draw(renderer)
     }
   }
+  drawScene(backgroundRenderer: BackgroundRenderer, entityRenderer: EntityRenderer): void {
+    if (this.#isDirty) {
+      this.drawBackground(backgroundRenderer)
+      this.drawEntities(entityRenderer)
+    }
+  }
   setClean(): void {
     this.#isDirty = false
   }
