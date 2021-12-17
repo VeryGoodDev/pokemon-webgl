@@ -37,7 +37,7 @@ const INITIAL_SCENE_STATE: SceneState = {
 }
 
 function calculateCurrentDirection(heldDirectionInputs: PlayerInput[]): Direction {
-  // Based on what I've observed in my emulator, this is the order of which direction input gets the highest priority when multiple are held. So this just goes down the conditionals until it finds a direction to match, or returns nothing if there are no matches (aka there are no direction inputs being held down at the moment)
+  // Based on what I've observed in my emulator, this is the order of which direction input gets the highest priority when multiple are held. So this just goes down the conditionals until it finds a direction to match, or returns null if there are no matches (aka there are no direction inputs being held down at the moment)
   if (heldDirectionInputs.includes(PlayerInput.DPAD_UP)) {
     return Direction.NORTH
   }
