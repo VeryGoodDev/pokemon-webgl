@@ -16,9 +16,9 @@ export interface EntityUpdateData {
   position?: Vec2
   direction?: Direction
 }
-interface SceneState {
+export interface SceneState {
   backdropColor: string
-  heldDirectionInputs: PlayerInput[]
+  currentDirection: Direction
   playerIsMoving: boolean
 }
 
@@ -32,7 +32,7 @@ export enum Direction {
 const INITIAL_SCENE_STATE: SceneState = {
   // FIXME: Eventually should be whatever the backdrop color is of the loaded game, or beginning of game if no load
   backdropColor: Colors.OUT_OF_BOUNDS_BACKGROUND,
-  heldDirectionInputs: [],
+  currentDirection: Direction.SOUTH,
   playerIsMoving: false,
 }
 
@@ -57,6 +57,7 @@ class SceneManager {
   #currentScene: Scene
   #keyboardInput: KeyboardInput
   #state: SceneState = INITIAL_SCENE_STATE
+  #heldDirectionInputs: PlayerInput[] = []
 
   constructor(keyboardInput: KeyboardInput) {
     this.#currentScene = null
@@ -65,7 +66,7 @@ class SceneManager {
   }
 
   get currentDirection(): Direction {
-    return calculateCurrentDirection(this.#state.heldDirectionInputs)
+    return calculateCurrentDirection(this.#heldDirectionInputs)
   }
 
   getCurrentScene(): Scene {
@@ -74,9 +75,11 @@ class SceneManager {
   setCurrentScene(scene: Scene): void {
     this.#currentScene = scene
   }
+  updateScene(): void {
+    this.getCurrentScene().update(this.#state)
+  }
 
   #handleInput({ action, enabled }: StateChange): void {
-    const { heldDirectionInputs } = this.#state
     switch (action) {
       // Movement changes
       case PlayerInput.DPAD_UP:
@@ -84,10 +87,12 @@ class SceneManager {
       case PlayerInput.DPAD_LEFT:
       case PlayerInput.DPAD_RIGHT:
         if (enabled) {
-          heldDirectionInputs.push(action)
+          this.#heldDirectionInputs.push(action)
         } else {
-          heldDirectionInputs.splice(heldDirectionInputs.indexOf(action), 1)
+          this.#heldDirectionInputs.splice(this.#heldDirectionInputs.indexOf(action), 1)
         }
+        this.#state.currentDirection = this.currentDirection
+        this.#state.playerIsMoving = this.#heldDirectionInputs.length > 0
         break
 
       // Functional buttons
@@ -108,6 +113,8 @@ class SceneManager {
         console.log(`${PlayerInput.BUTTON_SELECT} ${enabled ? `pressed` : `released`}`)
         break
     }
+    // Regardless of what the update was, we want to update the scene
+    this.updateScene()
   }
 }
 
