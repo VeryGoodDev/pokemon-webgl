@@ -17,11 +17,11 @@ class PrimaryLayer extends Layer {
 
   draw(): void {
     const scene = this.#sceneManager.getCurrentScene()
-    if (scene.isDirty) {
-      scene.drawBackground(this.#backgroundRenderer)
-      scene.drawEntities(this.#entityRenderer)
-      scene.setClean()
-    }
+    // if (scene.isDirty) {
+    scene.drawBackground(this.#backgroundRenderer)
+    scene.drawEntities(this.#entityRenderer)
+    scene.setClean()
+    // }
   }
 }
 

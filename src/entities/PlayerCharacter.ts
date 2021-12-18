@@ -22,6 +22,7 @@ class PlayerCharacter extends Entity {
   #spriteColor: SpriteColor
   #isMoving: boolean
   #isOnBike: boolean
+  #startMovementThreshold = 0.25
 
   constructor(playerName: string, spriteName: EntityName, spriteColor: SpriteColor) {
     super(playerName, new Vec2(64, 64), Direction.SOUTH)
@@ -41,7 +42,8 @@ class PlayerCharacter extends Entity {
       position: this.position,
     })
   }
-  update(updateData: EntityUpdateData) {
+  update(updateData: EntityUpdateData, deltaTime: number) {
+    console.log(`deltaTime =`, deltaTime)
     if (updateData.position) {
       this.position = updateData.position
     }

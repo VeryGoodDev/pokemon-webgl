@@ -71,13 +71,16 @@ class Scene {
   setDirty(): void {
     this.#isDirty = true
   }
-  update(sceneState: SceneState): void {
+  update(sceneState: SceneState, deltaTime: number): void {
     if (sceneState.playerIsMoving) {
       const direction = sceneState.currentDirection
-      this.#sceneData.player.update({
-        position: calculateNewPosition(this.#sceneData.player, direction),
-        direction,
-      })
+      this.#sceneData.player.update(
+        {
+          position: calculateNewPosition(this.#sceneData.player, direction),
+          direction,
+        },
+        deltaTime
+      )
       this.setDirty()
     }
   }

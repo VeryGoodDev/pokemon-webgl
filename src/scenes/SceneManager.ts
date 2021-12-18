@@ -75,8 +75,8 @@ class SceneManager {
   setCurrentScene(scene: Scene): void {
     this.#currentScene = scene
   }
-  updateScene(): void {
-    this.getCurrentScene().update(this.#state)
+  updateScene(deltaTime = 1 / 60): void {
+    this.getCurrentScene().update(this.#state, deltaTime)
   }
 
   #handleInput({ action, enabled }: StateChange): void {

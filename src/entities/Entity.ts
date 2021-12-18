@@ -17,7 +17,7 @@ abstract class Entity {
   }
 
   abstract draw(entityRenderer: EntityRenderer): void
-  abstract update(updateData: EntityUpdateData): void
+  abstract update(updateData: EntityUpdateData, deltaTime: number): void
 }
 
 export default Entity

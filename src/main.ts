@@ -21,6 +21,6 @@ async function main() {
   shaderProgram.init()
   const game = await createGame(shaderProgram)
   // game.draw()
-  game.runLoop()
+  // game.start()
 }
 main()
